@@ -6,9 +6,9 @@ concurrency:
 
 on:
   push:
-    branches: develop
+    branches: main
   pull_request:
-    branches: develop
+    branches: main
 
 jobs:
   make-pdf:
@@ -42,7 +42,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main'
     needs: make-pdf
     steps:
       - name: Deploy to GitHub Pages
