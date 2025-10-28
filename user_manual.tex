@@ -173,6 +173,12 @@ After Consolidationを押す時点でのLVDTで計測された変位を$\delta_\
     \varepsilon_\mathrm{r} &= \ab(1 - \sqrt{\frac{1-\varepsilon_\mathrm{v}}{1-\varepsilon_\mathrm{a}}}) \times 100
 \end{align}
 
+なお、昔のプログラム（DigitShowBasic）では、真ひずみが使用されていました。
+地盤工学会の基準は公称ひずみを採用していたため、DigitShowModbusではよりシンプルに公称ひずみを採用しました。
+ひずみ10\si{\percent}くらいまでであれば、両者の差は小さいですが、変形が大きくなるほど、公称ひずみ（現プログラム）と真ひずみ（旧プログラム）の差が大きくなります。既往研究との比較をする際には注意してください。
+真ひずみはひずみの足し合わせができることが利点とされるようです。
+必要に応じて、事後的に自分で計算してください。
+
 \subsection{応力}
 ロードセルが計測する荷重を$F$とします。軸差応力$q$は次式で計算されます。
 \begin{align}
