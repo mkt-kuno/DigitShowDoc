@@ -77,11 +77,26 @@ Debugビルドで試用して、安全性を確認してから長期運用して
 \end{lstcodeblock}
 \end{tcbcodeblock}
 
-subsection{フォント}
-完全表記が\inlinecode{--font=}、短縮表記が\inlinecode{-f=}です。
-フォントの指定は、\inlinecode{--font="MS Gothic"} \inlinecode{--font="Source Han Code JP"}のように指定します。
-デフォルトは``Lucida Sans Typewriter''ですが、他のフォントを指定することも可能です。
-見やすさもありますが、Windowsの環境によっては存在しないフォントを使用しようと、アプリケーションが試行する可能性がありますので、環境ごとに確認してください。
+\subsection{Webサーバー機能}
+完全表記が\inlinecode{--listen=}、短縮表記が\inlinecode{-l=}です。
+地下実験室にいなくても、同一ネットワーク内であれば、研究室のパソコンからモニタリングが可能になります。
+同一PCでたくさんチャートを見たいだけなら\inlinecode{--listen="localhost:80"}を、
+実験室の他のパソコンからも見たいなら\inlinecode{--listen="0.0.0.0:80"}を設定してください。
+\inlinecode{https://github.com/mkt-kuno/DigitShowWebview/}のRelease版をダウンロードして、
+実行中の\inlinecode{DigitShowModbus.exe}と同じフォルダに置くと、簡単にリモートモニタリングが可能です。
+複雑な表示がしたい人は自分でコーディングしてください。
+フォルダ構成は以下のようになります。
+
+\begin{tcbcodeblock}{Webサーバー機能有効時のフォルダ構成例}
+    \begin{lstcodeblock}[]
+DigitShowModbus.exe
+modbus.dll
+www/
+├── index.html
+├── ~~~~~.css
+└── ~~~~~.js
+    \end{lstcodeblock}
+\end{tcbcodeblock}
 
 \section{センサーと入力チャンネル構成}
 ここでは標準的なセンサーと入力チャンネルの構成について説明します。
@@ -218,7 +233,7 @@ LDT(Local Displacement Transducer)を使用した場合、鉛直方向の局所�
     \item Parametersでは、応力ひずみや、供試体の現在の寸法、レファレンス寸法などが表示されます。これらの値は、Physical Valueや供試体寸法の情報をもとに計算された値です。
     \item Basic Settingsでは、Control IDや、Samplingレートの設定や、制御とサンプリングの開始・停止を行うことができます。なお、Control IDやSamplingレートの設定は、Setボタンを押すことで反映されます。
     \item Current Settings \& Voltage Outputでは、現在の各種設定や\ref{sec:output_channel}節に示すアナログ電圧出力値の情報が表示されます。
-    \item csvtk Plotでは、Raw ValueやPhysical Value、Parametersの値の変化をグラフで表示します。グラフの表示を行うには、csvtk.exeをDigitShowModbus.exeと同じフォルダに配置し、Samplingを開始する必要があります。なお、オリジナルのcsvtkでは応力経路などの一部グラフを正しく表示することができないため、フォーク版（\url{https://github.com/mkt-kuno/csvtk/releases}）を使用することを推奨します。
+    \item Plotでは、データ保存中のRaw ValueやPhysical Value、Parametersの値の変化をグラフで表示します。表示点数はデフォルト設定では最大4096点までで、プロット間隔は自動的に調整されます。
 \end{enumerate}
 
 \subsection{DA Output - Voltage Output}
@@ -275,6 +290,16 @@ Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体
     \includegraphics[width=0.6\hsize]{img/DSM_Version.png}
     \caption{Other - Versionウィンドウ。}
     \label{fig:dsm_Version}
+\end{figure}
+
+\subsection{Other - Environmental Variables}
+ソフトウェアの環境変数を表示するウインドウです。
+コントロール中やデータ保存中に、環境変数を確認したい場合は注意してください。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\hsize]{img/DSM_envval.png}
+    \caption{Other - Environmental Variablesウィンドウ。}
+    \label{fig:dsm_env}
 \end{figure}
 
 \subsection{Other - Open Log Folder}

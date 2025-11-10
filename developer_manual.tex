@@ -15,6 +15,8 @@ DigitShowModbusのビルド方法や、専用のModbusRTUボードについて�
 
 ``300''を指定することでYamanin（v3）ボードを使用します。
 
+``400''を指定することでMilia（v4）ボードを使用します。
+
 大まかな動作の違いを以下に示します。
 \begin{table}[htbp]
     \centering
@@ -24,7 +26,8 @@ DigitShowModbusのビルド方法や、専用のModbusRTUボードについて�
         BoardName & Version & AD & DA & AD Refresh & Other \\ \midrule
         Trio（v1） & 100 & 16 & 6 & 100 ms & AD/DA要求後 1 ms Sleep \\
         Quartet（v2） & 200 & 16 & 8 & 100 ms & AD/DA要求後 1 ms Sleep \\
-        Yamanin（v3） & 300 & 16 & 8 & 10 ms & App起動時GreenLEDが点灯 \\  \bottomrule
+        Yamanin（v3） & 300 & 16 & 8 & 10 ms & App起動時GreenLEDが点灯 \\
+        Milia (v4) & 400 & 16 & 8 & 10 ms & ---- \\ \bottomrule
     \end{tabular}
     \label{tab:board_version}
 \end{table}
@@ -50,6 +53,12 @@ DigitShowModbusのビルド方法や、専用のModbusRTUボードについて�
 \end{figure}
 ボードが黒く、Zephyrのロゴが入っており、NeoPixel LEDが搭載されていること、DA出力の付近の素子が小型化されていることが特徴です。
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\hsize]{img/dev/milia.png}
+    \caption{Milia（v4）ボード}
+\end{figure}
+ボードが正方形でなくなり、下側にHX711、上側にその他I/Oがまとめられていることが特徴です。
 
 \subsection{ModbusRTU COM Port}
 完全表記が\inlinecode{--port=}、短縮表記が\inlinecode{-p=}です。
@@ -164,6 +173,21 @@ Snapsragonが乗ったSurface向けにクロスコンパイルしたい場合な
     \includegraphics[width=0.6\hsize]{img/vs2022/compo_result.png}
     \caption{追加のコンポーネント一覧}
 \end{figure}
+
+\subsection{ソースコードの取得}
+取得にはGitが必須です。最低限学習して、コミット、という単語の意味が分かるようにしてください。
+また、submoduleも使用しているため、Gitコマンドラインでの取得を推奨します。
+一発で行う場合は以下のように実行してください。
+
+\inlinecode{git clone --recurse-submodules https://github.com/mkt-kuno/DigitShowModbus.git}
+
+分割する場合や、更新があった場合などは
+
+\inlinecode{git clone https://github.com/mkt-kuno/DigitShowModbus.git}
+
+\inlinecode{git submodule update --init --recursive}
+
+のように、分割して必要なコマンドを実行してください。詳しくはGitのドキュメントを参照してください。
 
 \subsection{ソリューションのオープン}
 VisualStudioのインストールが完了したら、ソリューションファイルを開きます。いくつか方法がありますが、最も簡単なのはVisualStudioを起動した後に``プロジェクトやソリューションを開く''を選択し、``DigitShowModbus.sln''を選択することです。
@@ -499,16 +523,28 @@ ZephyerRTOSを使用していないため、プロジェクトが簡潔にまと
 コアが２つあるため、独自のルーチンやユーザーアプリケーションを並列に動作させることが可能です。
 RP2040本体のADCにはエラッタがあり、\qty{8}{\bit}の精度しかないため、使用しないことをおすすめします。
 
-\section{Webサーバー機能}
+\section{Webサーバー機能（開発者向け）}
 \subsection{概要}
 Webサーバー機能をONにすると、実行バイナリと同一ディレクトリにある www フォルダを静的コンテンツのルートディレクトリとして、Webサーバーが起動します。
 多くのブラウザでは、\inlinecode{index.html} を自動的に読み込むため、\inlinecode{www/index.html} を作成しておくと、ブラウザでアクセスした際に自動的に表示されます。
-DigitShowModbusでは、brotliを利用した圧縮を透過的（自動）で行うため、よほどの理由がない限りは、開発者は圧縮済みのコンテンツ（gz、zipなど）を作成する必要はありません。
-また、Modbusボードの計測データを取得したり、CSVTK画像を取得したり、制御コマンドを送信したりするためのWebAPIを用意しています。
+これらの機能を正しく使うにはネットワークの知識が必要です。IPアドレスとはなにか、同一プライベートネットワークとはなにか、サブネットとは何かが分からない人は、まずは基礎的なネットワークの知識を学んでください。
+
+DigitShowModbusでは、zipを利用した圧縮を透過的（自動）で行うため、よほどの理由がない限りは、開発者は圧縮済みのコンテンツ（gz、zipなど）を作成する必要はありません。
+また、Modbusボードの計測データを取得したり、チャート画像を取得したり、制御コマンドを送信したりするためのWebAPIを用意しています。
 これらを組み合わせると、独自のHTMLやCSS、JavaScriptを使用して、リモート監視・可視化用のWebアプリケーションを作成することができます。
+これらのAPIはCORS（Cross-Origin Resource Sharing）に対応しているため、同一オリジンポリシーに縛られず、他のドメインからもアクセス可能です。
+
+基本となるWebUIとして、\inlinecode{https://github.com/mkt-kuno/DigitShowWebview/}にて、
+DigitShowModbusのWebAPIを使用したリモート監視・可視化用のWebアプリケーションのサンプルを公開しています。
+Bun+React+TypeScriptで作成されており、高速に動作しますが、AIに書かせたコードも多く、安定した動作は保証できません。
+複雑な表示や、高機能なダッシュボードを作成したい人は、自身でコーディングしてください。
+
+\subsection{正常性確認API（v1）}
+\inlinecode{/v1/health/} に GET リクエストを送ると、サーバーの正常性を確認できます。
+状態とタイムスタンプのみがJSON形式で返されます。
 
 \subsection{計測データの取得API（v1）}
-\inlinecode{/v1/} に GET リクエストを送ると、計測データを取得できます。
+\inlinecode{/v1/} に GET リクエストを送ると、現在の最新計測データを取得できます。
 \inlinecode{localhost:80} 運用時であれば \inlinecode{http://localhost/v1/} でアクセスできます。
 計測データはJSON形式で返されます。
 以下は、計測データの例です。
@@ -561,9 +597,56 @@ DigitShowModbusでは、brotliを利用した圧縮を透過的（自動）で�
 \end{lstcodeblock}
 \end{tcbcodeblock}
 
-\subsection{CSVTK画像の取得API（v1）}
-csvtk画像は実機で表示されているものと同じものを取得できます。
+\subsection{チャート画像の取得API（v1）}
+チャート画像は実機で表示されているものと同じものを取得できます。
 GETリクエストのタイミングによっては、画像更新中のためにエラーが返されることがあります。
-\inlinecode{/v1/img/chart\_a/} に GET リクエストを送ると、CSVTK画像（左）を取得できます。
-\inlinecode{/v1/img/chart\_b/} に GET リクエストを送ると、CSVTK画像（右）を取得できます。
+\inlinecode{/v1/img/chart\_a/} に GET リクエストを送ると、チャート画像（左）を取得できます。
+\inlinecode{/v1/img/chart\_b/} に GET リクエストを送ると、チャート画像（右）を取得できます。
 \inlinecode{localhost:80} 運用時であれば \inlinecode{http://localhost/v1/img/chart\_a/} でアクセスできます。
+
+\subsection{プレビュー用データ配列の取得API（v1）}
+プレビュー用データ配列は、計測データを最大点数（デフォルト：4096）で保存されたものを取得できます。
+必要なデータを引数としてURLエンコードしてGETリクエストを送信します。
+\inlinecode{/v1/preview/} に GET リクエストを送ると、プレビュー用データ配列を取得できます。
+\inlinecode{localhost:80} 運用時であれば \inlinecode{http://localhost/v1/preview/} でアクセスできます。
+計測データはJSON形式で返されます。
+例えば\inlinecode{time}と\inlinecode{phy\_00}を取得したい場合、
+\inlinecode{http://localhost/v1/preview?time\&phy\_00} のように指定します。
+
+以下は、プレビュー用データ配列の例です。
+\begin{tcbcodeblock}{プレビュー用データ配列JSON 一部抜粋}
+\begin{lstcodeblock}[]
+{
+    "raw_00": {
+        "label": "00:LoadCell(i16)",
+        "list": [
+            -13.0,
+            -13.0,
+            -13.0,
+            -13.0,
+            -13.0,
+            -13.0,
+            -13.0,
+            -13.0,
+            -13.0,
+            -13.0,
+        ]
+    },
+    "time": {
+        "label": "Time[s]",
+        "list": [
+            0.01899999938905239,
+            0.04399999976158142,
+            0.05999999865889549,
+            0.07100000232458115,
+            0.09099999815225601,
+            0.10700000077486038,
+            0.12300000339746475,
+            0.1379999965429306,
+            0.15000000596046448,
+            0.1679999977350235,
+        ]
+    }
+}
+\end{lstcodeblock}
+\end{tcbcodeblock}
