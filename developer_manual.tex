@@ -605,7 +605,7 @@ GETリクエストのタイミングによっては、画像更新中のため�
 \inlinecode{localhost:80} 運用時であれば \inlinecode{http://localhost/v1/img/chart\_a/} でアクセスできます。
 
 \subsection{プレビュー用データ配列の取得API（v1）}
-プレビュー用データ配列は、計測データを最大点数（デフォルト：4096）で保存されたものを取得できます。
+プレビュー用データ配列は、計測データを最大点数（デフォルト：512）で保存されたものを取得できます。
 必要なデータを引数としてURLエンコードしてGETリクエストを送信します。
 \inlinecode{/v1/preview/} に GET リクエストを送ると、プレビュー用データ配列を取得できます。
 \inlinecode{localhost:80} 運用時であれば \inlinecode{http://localhost/v1/preview/} でアクセスできます。
