@@ -37,15 +37,15 @@ WindowsもしくはWSL2（Ubuntu）上にGitがインストールされている
     \inlinecode{git config --global user.email "your.email@address"}
 \end{quote}
 
-Dev Containerでは、適切に設定すれば、コンテナの内部でも上手くGitを使うことができます。つまり、ここで使う仮想コンテナは\inlinecode{./doc}に構築されるコンテナですが、そのコンテナはDigitShow Modbus本体のGitまで見に行ってくれます。よって、VS Codeでドキュメントを編集しながら、そのままpush等が可能です。ここではそのための設定を行います。
+Dev Containerでは、適切に設定すれば、コンテナの内部でも上手くGitを使うことができます。つまり、ここで使う仮想コンテナは\inlinecode{./}に構築されるコンテナですが、そのコンテナはDigitShowDoc本体のGitまで見に行ってくれます。よって、VS Codeでドキュメントを編集しながら、そのままpush等が可能です。ここではそのための設定を行います。
 
 詳細はVS Codeのウェブサイト（\url{https://code.visualstudio.com/remote/advancedcontainers/sharing-git-credentials}）にある通りです。「Using a credential helper」というのが楽だと思います。これはつまりGitHubのウェブサイト（\url{https://docs.github.com/ja/get-started/getting-started-with-git/caching-your-github-credentials-in-git}）を参照せよということなので、これに従ってください。
 
 \section{作業方法}
 \begin{enumerate}
-    \item VS Code上でDigitShow Modbusが格納されたディレクトリを開いてください。
+    \item VS Code上でDigitShowModbusが格納されたディレクトリを開いてください。
     \item Ctrl + Shift + Pのショートカットを利用し、「開発コンテナー：コンテナーでフォルダを開く」を選択してください。
-    \item \inlinecode{./doc}ディレクトリを選択しOKを押してください。
+    \item 現在のディレクトリと同じ、\inlinecode{./}ディレクトリを選択しOKを押してください。
     \item 任意の\inlinecode{.tex}ファイルを編集し、保存すると自動でコンパイルが回ります。エディタ右上の▷を押してもコンパイルが回ります。▷の右の、分割画面にルーペがついたボタンを押すと、隣にPDFを参照しながら\inlinecode{.tex}ファイルを編集できます。
 \end{enumerate}
 

@@ -299,7 +299,38 @@ IDが15の場合は、\inlinecode{MOTOR\_Control\_FileCtrl\_MonotonicAxialLoadin
 \end{tcbcodeblock}
 
 \section{Modbusボードについて}
-TBD...
+\subsection{基本機能とピン配置}
+ボードには3種類のコネクタがあります。HX711-ひずみ入力用コネクタ、ADS1115-電圧入力用コネクタ、GP8403-電圧出力用コネクタです。
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\hsize]{img/dev/modbus_hx711.png}
+    \caption{HX711-ひずみ入力用コネクタの簡易説明}
+\end{figure}
+歪入力は4線もしくはシールド線を含む5線で接続します。Vin、GND、SIG+、SIG-、SHIELDの5本です。
+シールド線は必須ではありませんが、ノイズ対策として接続することをお勧めします。
+またこれらの色は一般的なロードセルの配線色に合わせていますが、必ずしもそうでない場合があります。
+必ずテスターなどで抵抗値を測定し、正しい配線を確認してください。
+一般的な抵抗値テーブルを以下に示します。
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\hsize]{img/dev/gauge_table.png}
+    \caption{ひずみゲージ抵抗値テーブル}
+\end{figure}
+
+ADS1115は前述の通り、電源入力のコネクタです。1ブロックにつき4入力あります。
+CH10から先は16進数表記で A（10）、B（11）、C（12）、D（13）...となります。
+必ず入力信号側に赤色のケーブルを接続し、ターゲットデバイスのGNDと入力チャンネル横のGNDを接続してください。逆接続するとボード、もしくはターゲットデバイスが破損します。
+GP8403は電圧出力用のコネクタです。1ブロックにつき2出力あります。
+必ず出力信号側に赤色のケーブルを接続し、ターゲットデバイスのGNDと出力チャンネル横のGNDを接続してください。逆接続するとボード、もしくはターゲットデバイスが破損します。
+Gは予約文字でGND接続を意味します。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\hsize]{img/dev/modbus_other_pins.png}
+    \caption{その他コネクタの簡易説明}
+\end{figure}
+
+
 \subsection{Modbus TCP/RTU/ASCII}
 Modbusとは、1979年にModicon（現在のSchneider Electric）が開発した通信プロトコルです。
 Modbusは、RS-232CやRS-485などのシリアル通信を使用するModbus RTU/ASCIIと、TCP/IPを使用するModbus TCPの2つのバージョンがあります。
