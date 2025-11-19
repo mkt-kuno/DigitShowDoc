@@ -108,10 +108,10 @@ Debugビルドで試用して、安全性を確認してから長期運用して
 コードを検索する場合は下記のような記述を探してください。
 \begin{tcbcodeblock}{CDigitShowModbus.cpp より抜粋 }
     \begin{lstcodeblock}[language=C++]
-#define AO_DEFAULT_VLT_MOTOR_ON		(5.0f)			// Voltage of Axial Motor ON
-#define AO_DEFAULT_VLT_MOTOR_OFF	(0.0f)			// Voltage of Axial Motor OFF
-#define AO_DEFAULT_VLT_MOTOR_UP		(5.0f)			// Voltage of Axial Motor UP
-#define AO_DEFAULT_VLT_MOTOR_DOWN	(0.0f)			// Voltage of Axial Motor DOWN
+#define DSM_AO_DEF_VLT_MOTOR_ON (5.0f)			// Voltage of Axial Motor ON
+#define DSM_AO_DEF_VLT_MOTOR_OFF (0.0f)			// Voltage of Axial Motor OFF
+#define DSM_AO_DEF_VLT_MOTOR_UP (5.0f)			// Voltage of Axial Motor UP
+#define DSM_AO_DEF_VLT_MOTOR_DOWN (0.0f)		// Voltage of Axial Motor DOWN
 \end{lstcodeblock}
 \end{tcbcodeblock}
 
@@ -266,7 +266,8 @@ IDが15（CONTROL\_TYPE\_STEP）の場合は、\inlinecode{Control\_FileCtrl\_xx
 
 \begin{tcbcodeblock}{ Control\_Motor.cpp より抜粋 }
     \begin{lstcodeblock}[language=C++]
-    void Control_Motor::Main() {
+void Control_Motor::Main()
+{
 	spdlog::trace("{}", __FUNCTION__);
 
 	auto ctx = GetCDSBContext();
@@ -291,7 +292,7 @@ IDが15（CONTROL\_TYPE\_STEP）の場合は、\inlinecode{Control\_FileCtrl\_xx
 		auto ctrl_step_args = ctx->Control.Step[ctrl_step].args;
 		_for_spdlog["current_step"] = ctrl_step;
 		_for_spdlog["step_num"] = ctrl_step_cc;
-		for (int i = 0; i < NUM_STEPCTRL_ARGS_MAX; i++)
+		for (int i = 0; i < DSM_STEPCTRL_ARGS_MAX; i++)
 		{
 			_for_spdlog["args"][i] = ctrl_step_args[i].load();
 		}
