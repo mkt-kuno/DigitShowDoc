@@ -216,6 +216,9 @@ slnファイルのダブルクリックでも開けますが、VisualStudioが�
 コードの追加時や初回運用時などは ``Debug''モードでビルドすることをお勧めします。逆にそれ以降では、ログが増えすぎることから``Release''モードでビルドすることをお勧めします。
 ログの仕組みについては外部ライブラリを使用しているため``spdlog''のドキュメントを参照してください。
 通常運用時は特別な理由がない限り ``x64''の``Release''を選択しておけば間違いはありません。
+``spdlog''にはログレベルがあり、優先度の低いものから``trace''、``debug''、``info''、``warn''、``error''、``critical''があります。
+``Release''モードでは``info''以上が出力され、``Debug''モードでは``debug''以上が出力されます。
+``trace''は非常に詳細なログを出力するため、通常は使用しません。
 
 \begin{figure}[H]
     \centering
@@ -238,7 +241,7 @@ slnファイルのダブルクリックでも開けますが、VisualStudioが�
 \end{figure}
 
 \section{コントロールの追加・修正}
-\inlinecode{src/DigitShowModbus.cpp} 及び \inlinecode{src/DigitShowModbus.h} を編集します
+\inlinecode{src/DigitShowModbusDoc.cpp} 及び \inlinecode{src/DigitShowModbusDoc.h} を起点として、\inlinecode{src/Control\_xxxx.cpp}と\inlinecode{src/Control\_xxxx.h}を編集します。
 そもそもの前提知識として、自分にあった\inlinecode{C++}の教材で（なんでもいいです）、ポインタとクラスまで学んでおくことを強くお勧めします。
 そこまでの知識がないと、何を書いて良いか分からなく可能性が非常に高いです。
 Pythonの事前知識があればとっつきやすと思いますが、C++はPythonとは異なる部分が多いです。
@@ -251,48 +254,68 @@ Gitを使用していな場合、コードの変更点がわからなくなっ�
 多くの人が修正を加えたいのは、\inlinecode{CDigitShowModbusDoc::ControlMain}での処理になると思います。
 以下にIISモーターモードでの処理の例を示します。
 
-IDが1の場合は、\inlinecode{MOTOR\_Control\_PreConsolidation}を呼び出します。これは見ての通り、``Control from File''からではない先行圧密用の関数です。
+IDが1（CONTROL\_TYPE\_PRECONSOLIDATION）の場合は、\inlinecode{Control\_PreConsolidation}を呼び出します。これは見ての通り、``Control from File''からではない先行圧密用の関数です。
 
-IDが15の場合は、\inlinecode{MOTOR\_Control\_FileCtrl\_MonotonicAxialLoadingStress}などの関数を呼び出します。これがメイン機能の ``Control from File''で実行されるプログラム群です。
+IDが15（CONTROL\_TYPE\_STEP）の場合は、\inlinecode{Control\_FileCtrl\_xxxxx}関数群を呼び出します。これがメイン機能の ``Control from File''で実行されるプログラム群です。
 
-\begin{tcbcodeblock}{CDigitShowModbusDoc.cpp より抜粋 }
+本当に動いているか不安な場合は``Release''ビルドでもログの出る\inlinecode{spdlog::info}をどんどん追加して、ログを出力してください。
+
+また、変なC/C++コードを追加すると、``Release''モードではコンパイラによる最適化され、コードが無視されたり、意図しない挙動になったります。
+その結果``Debug''モードでは動くのに``Release''モードでは動かない、という事象が発生する可能性があります。
+自分の書いたコードが不安なら``Debug''モードで動作させましょう。
+
+\begin{tcbcodeblock}{ Control\_Motor.cpp より抜粋 }
     \begin{lstcodeblock}[language=C++]
-        void CDigitShowModbusDoc::MOTOR_ControlMain() {
+    void Control_Motor::Main() {
 	spdlog::trace("{}", __FUNCTION__);
 
 	auto ctx = GetCDSBContext();
-	if (ctx->Flag.control == FALSE) return;
+	if (ctx->Flag.control == FALSE)
+		return;
 
-	auto pCD = &ctx->Control.Data[ctx->Control.id];
+	nlohmann::json _for_spdlog;
 
-	spdlog::debug("MOTOR_ControlMain Ctrl ID:{}", ctx->Control.id);
+	spdlog::debug("MOTOR_ControlMain Ctrl Type:{}", (int)ctx->Control.type.load());
 
-	switch (ctx->Control.id)
+	switch (ctx->Control.type)
 	{
-		case 1: MOTOR_Control_PreConsolidation(pCD); break;
-		case 15:
+	case CONTROL_TYPE_NONE:
+		break;
+	case CONTROL_TYPE_PRECONSOLIDATION:
+		Control_PreConsolidation();
+		break;
+	case CONTROL_TYPE_STEP:
+	{
+		auto ctrl_step = ctx->Control.current_step.load();
+		auto ctrl_step_cc = ctx->Control.Step[ctrl_step].ctrl.load();
+		auto ctrl_step_args = ctx->Control.Step[ctrl_step].args;
+		_for_spdlog["current_step"] = ctrl_step;
+		_for_spdlog["step_num"] = ctrl_step_cc;
+		for (int i = 0; i < NUM_STEPCTRL_ARGS_MAX; i++)
 		{
-			auto ctrl_step_cc = ctx->Control.ctrl_num_array[ctx->Control.current_step_num].load();
-			spdlog::info("ControlMain: Control from file.");
-			spdlog::debug("ctx->Control.current:{}", ctx->Control.current_step_num);
-			spdlog::debug("ctx->Control.step_num[ctx->Control.current]:{}", ctrl_step_cc);
-			if (ctrl_step_cc == 0) {
-				// No Control
-				MOTOR_Set_Speed(0.0f);	// RPM->0
-			}
-			if (ctrl_step_cc == 1) MOTOR_Control_FileCtrl_MonotonicAxialLoadingStress();
-			if (ctrl_step_cc == 2) MOTOR_Control_FileCtrl_MonotonicAxialLoadingStrain();
-			if (ctrl_step_cc == 3) MOTOR_Control_FileCtrl_CyclicAxialLoadingStress();
-			if (ctrl_step_cc == 4) MOTOR_Control_FileCtrl_CyclicAxialLoadingStrain();
-			if (ctrl_step_cc == 5) MOTOR_Control_FileCtrl_Creep();
-			if (ctrl_step_cc == 6) MOTOR_Control_FileCtrl_LinearStressPathLoading();
-
-			AioUpdateOut();
-			break;
+			_for_spdlog["args"][i] = ctrl_step_args[i].load();
 		}
-		default:
-			AioUpdateOut();
-			break;
+		spdlog::info("{}:{}", __FUNCTION__, _for_spdlog.dump());
+
+		if (ctrl_step_cc == 0)
+		{
+			// No Control
+			Set_Speed(0.0f); // RPM->0
+		}
+		if (ctrl_step_cc == 1)
+			Control_Motor::Control_FileCtrl_MonotonicAxialLoading();
+		if (ctrl_step_cc == 2)
+			Control_Motor::Control_FileCtrl_CyclicAxialLoadingStress();
+		if (ctrl_step_cc == 3)
+			Control_Motor::Control_FileCtrl_CyclicAxialLoadingStrain();
+		if (ctrl_step_cc == 4)
+			Control_Motor::Control_FileCtrl_Creep();
+		if (ctrl_step_cc == 5)
+			Control_Motor::Control_FileCtrl_LinearStressPathLoading();
+		break;
+	}
+	default:
+		break;
 	}
 }
 \end{lstcodeblock}
@@ -556,7 +579,7 @@ RP2040本体のADCにはエラッタがあり、\qty{8}{\bit}の精度しかな�
 
 \section{Webサーバー機能（開発者向け）}
 \subsection{概要}
-Webサーバー機能をONにすると、実行バイナリと同一ディレクトリにある www フォルダを静的コンテンツのルートディレクトリとして、Webサーバーが起動します。
+Webサーバー機能をONにすると、実行バイナリと同一ディレクトリにある ``www'' フォルダを静的コンテンツのルートディレクトリとして、Webサーバーが起動します。
 多くのブラウザでは、\inlinecode{index.html} を自動的に読み込むため、\inlinecode{www/index.html} を作成しておくと、ブラウザでアクセスした際に自動的に表示されます。
 これらの機能を正しく使うにはネットワークの知識が必要です。IPアドレスとはなにか、同一プライベートネットワークとはなにか、サブネットとは何かが分からない人は、まずは基礎的なネットワークの知識を学んでください。
 
