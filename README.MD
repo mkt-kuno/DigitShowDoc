@@ -21,6 +21,7 @@ https://mkt-kuno.github.io/DigitShowDoc/
 
 - テキストエディタ（Visual Studio Code推奨）
 - Git
+- Node.js（HTMLプレビュー用、オプション）
 
 ### 編集方法
 
@@ -42,6 +43,30 @@ https://mkt-kuno.github.io/DigitShowDoc/
    ```
 
 詳細は [markdown_guide.md](markdown_guide.md) を参照してください。
+
+## ローカルでのHTMLプレビュー
+
+MarkdownからHTMLを生成してブラウザでプレビューできます：
+
+### Windows の場合
+```powershell
+# PowerShellで実行
+.\build-html.ps1
+```
+
+### Linux/Mac の場合
+```bash
+# ターミナルで実行
+./build-html.sh
+```
+
+### VS Code から実行
+1. `Ctrl+Shift+B` でビルドタスクを実行
+2. または `Ctrl+Shift+P` → "Tasks: Run Task" → "Build HTML from Markdown" を選択
+
+生成されたHTMLは `docs/` ディレクトリに出力されます。
+
+詳細は [BUILD_README.md](BUILD_README.md) を参照してください。
 
 ## 関連リポジトリ
 

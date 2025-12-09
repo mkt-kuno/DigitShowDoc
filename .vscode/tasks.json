@@ -2,29 +2,89 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "LaTeX build",
+            "label": "Build HTML from Markdown (Windows)",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy", "Bypass",
+                "-File", "${workspaceFolder}/build-html.ps1"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "focus": true
+            }
+        },
+        {
+            "label": "Build HTML from Markdown (Linux/Mac)",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/build-html.sh"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "focus": true
+            }
+        },
+        {
+            "label": "Build HTML from Markdown (Docker)",
             "type": "shell",
             "command": "docker",
             "args": [
                 "run", "--rm",
-                "-v", "${workspaceFolder}:/work:cached",
-                "-v", "${workspaceFolder}/.cache/.texlive2024:/root/.texlive2024:cached",
-                "-v", "${workspaceFolder}/.cache/luatex-cache:/usr/local/texlive/2024/texmf-var/luatex-cache:cached",
+                "-v", "${workspaceFolder}:/work",
                 "-w", "/work",
-                "texlive/texlive:TL2024-historic",
-                "latexmk",
-                "-e", "$lualatex='lualatex --cmdx -file-line-error -synctex=1 -interaction=nonstopmode -halt-on-error %O %S'",
-                "-e", "$bibtex='upbibtex %O %B'",
-                "-e", "$biber='biber -u -U --output_safechars %O %B'",
-                "-e", "$makeindex='upmendex %O -o %D %S'",
-                "-lualatex",
-                "main.tex"
+                "node:20-alpine",
+                "sh", "-c",
+                "apk add --no-cache bash && chmod +x build-html.sh && ./build-html.sh"
             ],
-            "options": {
-                "env": { "TEXINPUTS": ".:/work//:"}
-            },
             "group": "build",
-            "problemMatcher": []
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "focus": true
+            }
         },
+        {
+            "label": "Open documentation in browser",
+            "type": "shell",
+            "command": "start",
+            "args": ["${workspaceFolder}/docs/index.html"],
+            "windows": {
+                "command": "cmd",
+                "args": ["/c", "start", "${workspaceFolder}/docs/index.html"]
+            },
+            "linux": {
+                "command": "xdg-open",
+                "args": ["${workspaceFolder}/docs/index.html"]
+            },
+            "osx": {
+                "command": "open",
+                "args": ["${workspaceFolder}/docs/index.html"]
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "Build and Open",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build HTML from Markdown (Windows)",
+                "Open documentation in browser"
+            ],
+            "problemMatcher": []
+        }
     ]
 }

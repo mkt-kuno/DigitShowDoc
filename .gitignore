@@ -6,10 +6,10 @@
 *.swp
 *.swo
 *~
-.vscode/
 .idea/
 
-# Build artifacts
+# Build artifacts - local HTML generation
+docs/*.html
 docs/*.md
 docs/img/
 node_modules/
