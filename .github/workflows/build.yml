@@ -1,4 +1,4 @@
-name: Compile
+name: Deploy Markdown to Pages
 
 concurrency:
   group: "pages"
@@ -11,40 +11,75 @@ on:
     branches: master
 
 jobs:
-  make-pdf:
+  build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Compile LaTeX (LuaLateX)
-        uses: xu-cheng/latex-action@v4
-        with:
-          root_file: main.tex
-          texlive_version: 2025
-          latexmk_use_lualatex: true
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Move PDFs to public directory
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Copy markdown files to docs
         run: |
-          mv main.pdf docs/
+          mkdir -p docs
+          cp *.md docs/ 2>/dev/null || true
+          cp -r img docs/ 2>/dev/null || true
+          # Create a simple index.html that redirects to the markdown viewer or renders markdown
+          cat > docs/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="ja">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>DigitShow Modbus Documentation</title>
+              <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
+              <style>
+                  .markdown-body {
+                      box-sizing: border-box;
+                      min-width: 200px;
+                      max-width: 980px;
+                      margin: 0 auto;
+                      padding: 45px;
+                  }
+                  @media (max-width: 767px) {
+                      .markdown-body { padding: 15px; }
+                  }
+              </style>
+          </head>
+          <body>
+              <article class="markdown-body" id="content">
+                  <h1>Loading...</h1>
+              </article>
+              <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+              <script>
+                  async function loadMarkdown() {
+                      try {
+                          const response = await fetch('index.md');
+                          const markdown = await response.text();
+                          document.getElementById('content').innerHTML = marked.parse(markdown);
+                      } catch (error) {
+                          document.getElementById('content').innerHTML = '<h1>Error loading documentation</h1><p>' + error + '</p>';
+                      }
+                  }
+                  loadMarkdown();
+              </script>
+          </body>
+          </html>
+          EOF
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/
 
-  deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    if: github.ref == 'refs/heads/master'
-    needs: make-pdf
-    steps:
       - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/master'
         id: deployment
         uses: actions/deploy-pages@v4
