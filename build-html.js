@@ -31,8 +31,8 @@ function createHtmlTemplate(title, tocHtml, contentHtml) {
     <title>${escapeHtml(title)} - DigitShow Modbus Documentation</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css">
     <style>
+        /* Let the browser handle colors - no forced background colors */
         body {
-            background-color: #ffffff;
             margin: 0;
             padding: 0;
         }
@@ -48,11 +48,12 @@ function createHtmlTemplate(title, tocHtml, contentHtml) {
                 padding: 15px;
             }
         }
+        /* Simple navigation menu */
         .nav-menu {
-            background-color: #f6f8fa;
-            border-bottom: 1px solid #d0d7de;
-            padding: 10px 0;
-            margin-bottom: 20px;
+            padding: 16px 0;
+            margin-bottom: 24px;
+            border-bottom: 1px solid;
+            border-color: inherit;
         }
         .nav-menu ul {
             list-style: none;
@@ -66,8 +67,6 @@ function createHtmlTemplate(title, tocHtml, contentHtml) {
         }
         .nav-menu a {
             text-decoration: none;
-            color: #0969da;
-            font-weight: 500;
         }
         .nav-menu a:hover {
             text-decoration: underline;
@@ -77,21 +76,22 @@ function createHtmlTemplate(title, tocHtml, contentHtml) {
                 padding: 0 15px;
             }
         }
-        /* TOC Styles */
+        /* Simple TOC styles - let inherited colors apply */
         .toc {
-            background-color: #f6f8fa;
-            border: 1px solid #d0d7de;
-            border-radius: 6px;
             padding: 16px;
             margin-bottom: 24px;
+            border: 1px solid;
+            border-radius: 6px;
+            border-color: inherit;
         }
         .toc summary {
             cursor: pointer;
             user-select: none;
             margin-bottom: 8px;
+            font-weight: bold;
         }
         .toc summary:hover {
-            color: #0969da;
+            opacity: 0.8;
         }
         .toc ul {
             list-style: none;
@@ -106,7 +106,6 @@ function createHtmlTemplate(title, tocHtml, contentHtml) {
             margin: 4px 0;
         }
         .toc a {
-            color: #0969da;
             text-decoration: none;
         }
         .toc a:hover {
