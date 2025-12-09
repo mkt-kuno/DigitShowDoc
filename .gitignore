@@ -12,6 +12,9 @@
 # Build artifacts
 docs/*.md
 docs/img/
+node_modules/
+package.json
+package-lock.json
 
 # OS specific
 Thumbs.db
