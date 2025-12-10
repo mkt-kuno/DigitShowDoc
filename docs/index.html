@@ -2,21 +2,104 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>main.pdf</title>
+  <title>How to use DigitShowModbus</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    html, body { height: 100%; margin: 0; }
-    .wrap { height: 100%; }
-    .pdf { width: 100%; height: 100%; border: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 40px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1.8em;
+      font-weight: 600;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 0.9em;
+    }
+    .button-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 15px 30px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      min-width: 150px;
+      font-size: 1em;
+    }
+    .btn-primary {
+      background: #667eea;
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn-primary:hover {
+      background: #5a6fd8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    .btn-secondary {
+      background: #764ba2;
+      color: white;
+      box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+    }
+    .btn-secondary:hover {
+      background: #6a4190;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+    }
+    .description {
+      margin-top: 30px;
+      color: #777;
+      font-size: 0.85em;
+      line-height: 1.5;
+    }
+    @media (max-width: 480px) {
+      .button-group { flex-direction: column; }
+      h1 { font-size: 1.5em; }
+    }
   </style>
 </head>
 <body>
-  <!-- ブラウザがPDF表示に対応していればここに表示されます -->
-  <object class="pdf wrap" data="./main.pdf" type="application/pdf">
-    <!-- 表示できない環境向けフォールバック -->
-    <p>PDFを表示できません。こちらから開いてください：
-      <a href="./main.pdf">./main.pdf</a>
-    </p>
-  </object>
+  <div class="container">
+    <h1>DigitShow Modbus（v4.6.x）のいろは</h1>
+    <p class="subtitle">東京大学生産技術研究所桑野研究室</p>
+    
+    <div class="button-group">
+      <a href="main.html" class="btn btn-primary">
+        📖 HTML版で読む
+      </a>
+      <a href="main.pdf" class="btn btn-secondary" target="_blank">
+        📄 PDF版で読む
+      </a>
+    </div>
+    
+    <div class="description">
+      <strong>HTML版:</strong> ブラウザで直接読める、翻訳・検索が可能<br>
+      <strong>PDF版:</strong> 高品質な印刷・レイアウト、オフライン閲覧可能
+    </div>
+  </div>
 </body>
 </html>

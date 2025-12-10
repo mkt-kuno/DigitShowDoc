@@ -24,6 +24,16 @@ jobs:
           texlive_version: 2025
           latexmk_use_lualatex: true
 
+      - name: Generate HTML with Pandoc
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/data pandoc/latex:latest \
+            main.tex -f latex -o docs/pandoc.html \
+            --standalone --toc --toc-depth=2 --mathjax \
+            --variable maxwidth=80em \
+            --metadata title="DigitShowModbusのいろは"
+          # Fix image paths for docs/ subdirectory
+          sed -i 's|<img src="img/|<img src="../img/|g' docs/pandoc.html
+
       - name: Move PDFs to public directory
         run: |
           mv main.pdf docs/
