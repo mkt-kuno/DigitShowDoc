@@ -27,12 +27,12 @@ jobs:
       - name: Generate HTML with Pandoc
         run: |
           docker run --rm -v ${{ github.workspace }}:/data pandoc/latex:latest \
-            main.tex -f latex -o docs/pandoc.html \
+            main.tex -f latex -o docs/main.html \
             --standalone --toc --toc-depth=2 --mathjax \
             --variable maxwidth=80em \
             --metadata title="DigitShowModbusのいろは"
           # Fix image paths for docs/ subdirectory
-          sed -i 's|<img src="img/|<img src="../img/|g' docs/pandoc.html
+          sed -i 's|<img src="img/|<img src="../img/|g' docs/main.html
 
       - name: Move PDFs to public directory
         run: |
