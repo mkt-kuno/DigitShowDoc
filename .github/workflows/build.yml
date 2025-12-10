@@ -31,8 +31,10 @@ jobs:
             --standalone --toc --toc-depth=2 --mathjax \
             --variable maxwidth=80em \
             --metadata title="DigitShowModbusのいろは"
-          # Fix image paths for docs/ subdirectory
-          sed -i 's|<img src="img/|<img src="../img/|g' docs/main.html
+      
+      - name: Copy images to docs directory
+        run: |
+          cp -ra img docs/
 
       - name: Move PDFs to public directory
         run: |
