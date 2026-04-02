@@ -232,9 +232,10 @@ LDT(Local Displacement Transducer)を使用した場合、鉛直方向の局所�
     \item Raw Valueでは、センサーからAD変換されたデジタル信号の生データを表示します。最小値は-32768、最大値は32767のint16型の値が表示されます。
     \item Physical Valueでは、Raw Valueをキャリブレーション値を用いて物理量($\si{N}$や$\si{mm}$など)に変換した値を表示します。
     \item Parametersでは、応力ひずみや、供試体の現在の寸法、レファレンス寸法などが表示されます。これらの値は、Physical Valueや供試体寸法の情報をもとに計算された値です。
-    \item Basic Settingsでは、Control IDや、Samplingレートの設定や、制御とサンプリングの開始・停止を行うことができます。なお、Control IDやSamplingレートの設定は、Setボタンを押すことで反映されます。
-    \item Current Settings \& Voltage Outputでは、現在の各種設定や\ref{sec:output_channel}節に示すアナログ電圧出力値の情報が表示されます。
+    \item Voltage Outでは、\ref{sec:output_channel}節に示すアナログ電圧出力値の情報が表示されます。
     \item Plotでは、Raw ValueやPhysical Value、Parametersの値の変化をグラフで表示します。データ保存中は最大512点まで表示されます。保存していないときは、最新60秒のデータが表示されます。
+    \item System Log \& Control Info では、システム全体のエラーや警告ログ、現状のControl情報や、次のステップの情報などを閲覧できます。
+    \item Current Settings \& Basic Settingsでは、Control Typeや、Samplingレートの設定や、制御とサンプリングの開始・停止を行うことができます。なお、Control TypeやSamplingレートの設定は、Setボタンを押すことで反映されます。
 \end{enumerate}
 
 \subsection{DA Output - Voltage Output}
@@ -348,17 +349,29 @@ Pre-Consolidationは、供試体の飽和過程で使用するコントロール
     \label{fig:precon-q-rpm}
 \end{figure}
 
-\subsection{Control from file - 0: No Control}
-Control No.0: No controlは、何の制御も行いません。デフォルトの制御として設定されています。
+\subsection{Control from file - 0: Stop}
+Control No.0: Stopは、引数で指定しない限り、基本的に何の制御も行いません。
 モーターのクラッチはONのまま、モーターは回転しません（載荷軸は全く動きません）。
 セル圧を制御するEPの出力電圧は、それまでの値を保持します（セル圧も基本的に変動しません）。
+
+v4.6.xまでは「No control」でしたが、v4.7.0からは「Stop」に名称を変更しました。
+互換性を保つため、引数で指定しない場合は、従来の「No control」と同様に、基本的に何の制御も行いません。
+
+以下のパラメータが設定できます。
+\begin{itemize}
+    \item Args[00]: Motor クラッチOFF設定。0は何もしない、1はモータークラッチOFF
+    \item Args[01]: Motor 回転方向設定。0は何もしない、1はモーターUP
+    \item Args[02]: Motor 速度設定。0は何もしない、1は回転速度をゼロ
+    \item Args[03]: EP Cell Pressure設定。0は何もしない、1はEPの出力電圧を0[V]
+    \item Args[04]: EP Axial Pressure設定。0は何もしない、1はEPの出力電圧を0[V]
+\end{itemize}
 
 \subsection{Control from file - 1: Monotonic Axial Loading}
 Control No.1: Monotonic Axial Loadingは、単調軸圧縮・軸伸長を行うコントロールです。
 
 以下のパラメータが設定できます。
 \begin{itemize}
-    \item Args[00]: 圧縮(compression)か伸長(extension)か。0が圧縮、1が伸長です。
+    \item Args[00]: 圧縮（compression）か伸長（extension）か。0が圧縮、1が伸長です。
     \item Args[01]: モーターの回転速度。単位はRPM。RPMと実際の載荷速度の関係は試験機および減速機の設定などによって異なるため、予め確認しておく必要があります。
     \item Args[02]: 半径方向の有効応力。単位はkPa。正の値が入力されたときのみ、EPでセル圧を制御することで、円周方向の有効応力を設定された値に保ちます（0以下の値が入力された場合、EPの出力圧力は変化しません）。逆に、非排水三軸試験を行う場合には、必ず0を入力してください。
     \item Args[03]: 軸ひずみのリミッター設定を行うか否か。1で有効化、0で無効化。リミッターを有効化した場合、Args[04]で設定された値を超えるひずみが計測された場合に次のStep No.に進みます。
