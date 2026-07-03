@@ -4,18 +4,21 @@ DigitShowModbusのビルド方法や、専用のModbusRTUボードについて�
 
 \section{起動時変数}
 \label{sec:startup_variable_developer}
-\subsection{ModbusRTU AD/DA Board Version}
-完全表記が\inlinecode{--version=}、短縮表記が\inlinecode{-v=}です。
+\subsection{ModbusRTU AD/DA Board}
 
-使用しているModbusRTUボードのバージョンを指定するための引数です。デフォルトでTrio（v1）ボードを使用します。
+2つの起動引数が存在します。
+通信方法が``USBシリアル変換IC''か、``USB CDC-ACMによるマイコンとのダイレクト通信''かの選択が１つめ。
+AnalogInputのInputRegisterが ``int16\_t'' か、``float32\_t'' かの選択が２つめです。
 
-``100''を指定することでTrio（v1）ボードを使用します。
+USB CDC-ACMによるダイレクト通信での高速ポーリング処理の有効化には
+完全表記が\inlinecode{--usb\_cdc\_direct=}、短縮表記が\inlinecode{-ucd=}です。
+``True''もしくは``true''、``1''を指定することで高速ポーリングが有効になります。
 
-``200''を指定することでQuartet（v2）ボードを使用します。
-
-``300''を指定することでYamanin（v3）ボードを使用します。
-
-``400''を指定することでMilia（v4）ボードを使用します。
+InputRegisterの精度をfloat32\_t（FloatInputRegister）にすると、
+int16\_t で通信されるデータに、小数点以下の値を拡張する形で通信されます。
+その為、キャリブレーションなどに影響はありません。
+完全表記が\inlinecode{--float\_intput\_reg=}、短縮表記が\inlinecode{-fir=}です。
+``True''もしくは``true''、``1''を指定することでInputRegisterの精度がfloat32\_tになります。
 
 大まかな動作の違いを以下に示します。
 \begin{table}[htbp]
@@ -23,11 +26,12 @@ DigitShowModbusのビルド方法や、専用のModbusRTUボードについて�
     \caption{各ボードの機能概要}
     \begin{tabular}{rlrrrr}
         \toprule
-        BoardName & Version & AD & DA & AD Refresh & Other \\ \midrule
-        Trio（v1） & 100 & 16 & 6 & 100 ms & AD/DA要求後 1 ms Sleep \\
-        Quartet（v2） & 200 & 16 & 8 & 100 ms & AD/DA要求後 1 ms Sleep \\
-        Yamanin（v3） & 300 & 16 & 8 & 10 ms & App起動時GreenLEDが点灯 \\
-        Milia (v4) & 400 & 16 & 8 & 10 ms & ---- \\ \bottomrule
+        BoardName & AD & DA & CDC-Direct & FloatInput & Other \\ \midrule
+        Trio（v1） & 16 & 6 & False & False  & \\
+        Quartet（v2） & 16 & 8 & False & False & \\
+        Yamanin（v3） & 16 & 8 & True & True & \\
+        Milia (v4) & 16 & 8 & True & True & \\
+        Modulo (v5) & 16 & 8 & True & False & \\ \bottomrule
     \end{tabular}
     \label{tab:board_version}
 \end{table}
