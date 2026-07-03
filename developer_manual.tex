@@ -656,13 +656,6 @@ Bun+React+TypeScriptで作成されており、高速に動作しますが、AI�
 \end{lstcodeblock}
 \end{tcbcodeblock}
 
-\subsection{チャート画像の取得API（v1）}
-チャート画像は実機で表示されているものと同じものを取得できます。
-GETリクエストのタイミングによっては、画像更新中のためにエラーが返されることがあります。
-\inlinecode{/v1/img/chart\_a/} に GET リクエストを送ると、チャート画像（左）を取得できます。
-\inlinecode{/v1/img/chart\_b/} に GET リクエストを送ると、チャート画像（右）を取得できます。
-\inlinecode{localhost:80} 運用時であれば \inlinecode{http://localhost/v1/img/chart\_a/} でアクセスできます。
-
 \subsection{プレビュー用データ配列の取得API（v1）}
 プレビュー用データ配列は、計測データを最大点数（デフォルト：512）で保存されたものを取得できます。
 必要なデータを引数としてURLエンコードしてGETリクエストを送信します。
