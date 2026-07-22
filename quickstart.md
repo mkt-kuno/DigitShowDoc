@@ -96,7 +96,7 @@ Pre-consolidationは所定の q （軸差応力[kPa]）を保つ制御コマン�
 2. 左上の“Control”タブで“Control from file”をクリックします。
 3. 圧密・クリープ・軸圧縮の設定を入力します。“Load”を押すとその Step No. の現在の設定が表示され、“Update”を押すとそのStep No.の設定が現在入力している値（パラメータ）に更新されます。
 4. Current Step No. が圧密のstep（0）になっていることを確認してください。
-5. 設定の一例は[圧密③：Control from fileの設定](#圧密③control-from-fileの設定)節の表の通りです（初期拘束圧20 kPaから、100 kPaで等方圧密し、排水条件で軸ひずみ15 %まで単調載荷する場合）：
+5. 設定の一例は[圧密③：Control from fileの設定](#圧密③control-from-fileの設定)節の表の通りです（初期拘束圧$`20\,\mathrm{kPa}`$から、$`100\,\mathrm{kPa}`$で等方圧密し、排水条件で軸ひずみ$`15\,\%`$まで単調載荷する場合）：
    - Step No.1 のCreepの時間は本来予定している時間よりも長くしておくことを推奨します（意図しないタイミングで次のstepに進むのを防ぐため）。
    - 非排水軸圧縮（CU試験）を行う場合は、載荷中セル圧を変化させる必要がないため、Step No.2のMonotonic Axial LoadingのArgs[02]を0としてください。
    - Motor RPMと軸変位速度の関係は事前にキャリブレーションしてください（試験機により異なります）。
