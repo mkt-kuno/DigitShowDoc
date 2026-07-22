@@ -1,7 +1,7 @@
 # ドキュメント作成ガイド
 
 本ドキュメントは GitHub Flavored Markdown (GFM) で書かれています。
-GitHub リポジトリ上で直接閲覧でき、Jekyll により GitHub Pages でも公開しています（PDF 生成は行いません）。
+GitHub リポジトリ上で直接閲覧でき、PDF 生成は行いません。
 
 ## 構成
 
@@ -65,7 +65,7 @@ GitHub のアンカーリンク（スラッグ）は以下のように生成さ�
 
 ### 数式
 
-GitHub は MathJax により数式をレンダリングします。Jekyll（GitHub Pages）でも `assets/css` なしで MathJax を読み込む `_layouts/default.html` で対応しています。
+GitHub は MathJax により数式をレンダリングします。
 
 - インライン: `$...$`
 - ディスプレイ: `$$` で囲み、`align` 環境はそのまま使用:
@@ -148,22 +148,13 @@ DigitShowDoc/
 ├── user_manual.md         # ユーザーマニュアル
 ├── developer_manual.md    # デベロッパーマニュアル
 ├── howtomd.md             # ドキュメント作成ガイド（このファイル）
-├── _config.yml            # Jekyll 設定
-├── _layouts/
-│   └── default.html       # 共通レイアウト（MathJax 読込）
-├── assets/
-│   └── css/
-│       └── style.css      # 共通スタイル
-├── img/                   # 画像ファイル
-│   ├── DSM_*.png
-│   ├── dev/
-│   │   └── *.png
-│   ├── vs2022/
-│   │   └── *.png
-│   └── precon_q_rpm.png
-└── .github/
-    └── workflows/
-        └── pages.yml      # GitHub Pages デプロイ
+└── img/                   # 画像ファイル
+    ├── DSM_*.png
+    ├── dev/
+    │   └── *.png
+    ├── vs2022/
+    │   └── *.png
+    └── precon_q_rpm.png
 ```
 
 ## 注意事項
@@ -171,4 +162,3 @@ DigitShowDoc/
 - pandoc や LuaLaTeX は使用しません。全ての Markdown ファイルは手書きで作成します。
 - 画像は事前に `img/` に配置し、パスは相対パスで指定します。
 - 数式内の LaTeX コマンド（`\mathrm`、`\left`、`\right`、`\frac` 等）はそのまま残します。
-- `_layouts/default.html` で MathJax を読み込むため、Pages 上でも数式が表示されます。
