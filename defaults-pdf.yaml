@@ -1,0 +1,17 @@
+# PDF ビルド設定: pandoc --defaults=defaults-pdf.yaml
+# main.tex (Pandoc対応LaTeX) -> main.pdf (lualatex + jlreq)
+input-files:
+  - main.tex
+reader: latex
+to: latex
+output-file: main.pdf
+pdf-engine: lualatex
+top-level-division: chapter
+number-sections: true
+toc: true
+toc-depth: 1
+syntax-highlighting: idiomatic
+include-in-header:
+  - pandoc/preamble.tex
+metadata:
+  lang: ja

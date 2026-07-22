@@ -1,141 +1,26 @@
+% DigitShow Modbus（v5.0.x）のいろは
+%
+% このドキュメントは「Pandoc対応LaTeX」で記述されています。
+% PDF/HTMLのビルドは Pandoc 経由で行います（lualatex での直接コンパイルはしません）。
+%
+%   PDF : pandoc --defaults=defaults-pdf.yaml   -> main.pdf
+%   HTML: pandoc --defaults=defaults-html.yaml  -> main.html
+%
+% 記法のルールは付録（howtotex.tex）を参照してください。
 \documentclass[report]{jlreq}
-
-\usepackage{lltjext}
-\usepackage[deluxe, haranoaji]{luatexja-preset}
-
-\usepackage{amsmath}
-\usepackage{upgreek}
-\usepackage{physics2}
-\usephysicsmodule{ab}
-\usepackage{diffcoeff}
-\usepackage{siunitx}
-\sisetup{
-    per-mode = symbol, 
-    range-units = single, 
-    range-phrase = {〜},
-    list-pair-separator = {\text{,}\ },
-    list-final-separator = {\text{,}\ および\ },
-}
-\usepackage{tcolorbox}
-\tcbuselibrary{breakable}
-\tcbuselibrary{listings}
-\tcbuselibrary{skins}
-\tcbset{
-    enhanced, 
-    breakable=true, 
-}
-% https://fromatom.hatenablog.com/entry/2020/07/21/231218
-\newtcbox{\inlinecode}[1][]{
-    on line,
-    colback=gray!30!white,
-    frame empty,
-    left=0mm,right=0mm,top=0mm,bottom=0mm,
-    box align=base,
-    fontupper=\ttfamily
-}
-% https://zenn.dev/cyber_hacnosuke/articles/41275710b8f594
-\newtcolorbox{tcbcodeblock}[2][]{
-    enhanced, 
-    breakable=true, 
-    sharp corners, 
-    attach boxed title to top left={}, 
-    boxed title style={
-        skin=enhancedfirst jigsaw, 
-        sharp corners, 
-        bottom=0mm, 
-        boxrule=0mm, 
-        top=0.5ex, 
-        colback=black!75!white, 
-    }, 
-    title=\texttt{#2}, 
-    #1
-}
-\usepackage{listings}
-\lstnewenvironment{lstcodeblock}[1][]{
-    \lstset{
-        numbers=left, 
-        breaklines=true, 
-        commentstyle=\gtfamily, 
-        basicstyle=\ttfamily, 
-        numberstyle=\ttfamily\color{gray}, 
-        xleftmargin=2.5em, 
-        lineskip=-1.4ex, 
-        tabsize=4, 
-        breakindent=0mm, 
-        #1
-    }
-}{}
-\makeatletter
-\def\lst@lettertrue{\let\lst@ifletter\iffalse}
-\makeatother
-\usepackage{booktabs}
-\usepackage{float}
-\usepackage{graphicx}
-\usepackage[cc]{titlepic}
-\usepackage[fixed]{fontawesome5}
-\usepackage{xcolor}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta}
-% \usetikzlibrary{external}
-% \tikzexternalize[prefix=tikz/]
-% \usepackage{pgfplots}
-% \pgfplotsset{compat=1.18}
-\usepackage{xurl}
-\usepackage{hyperref}
-\usepackage{cleveref}
-\crefname{equation}{式}{式}
-\crefname{figure}{図}{図}
-\crefname{table}{表}{表}
-\crefname{enumi}{項目}{項目}
-\creflabelformat{chapter}{#2#1#3章}
-\crefname{chapter}{第}{第}
-\crefname{section}{}{}
-\crefname{subsection}{}{}
-\creflabelformat{section}{#2#1#3節}
-\creflabelformat{subsection}{#2#1#3小節}
-\newcommand{\crefpairconjunction}{,\ }
-\newcommand{\crefrangeconjunction}{から}
-\newcommand{\crefmiddleconjunction}{,\ }
-\newcommand{\creflastconjunction}{,\ および}
-
-\definecolor{cud-brown}{RGB}{128,64,0}
-\definecolor{cud-red}{RGB}{255,75,0}
-\definecolor{cud-orange}{RGB}{246,170,0}
-\definecolor{cud-yellow}{RGB}{255,241,0}
-\definecolor{cud-green}{RGB}{3,175,122}
-\definecolor{cud-sky}{RGB}{77,196,255}
-\definecolor{cud-blue}{RGB}{0,90,255}
-\definecolor{cud-purple}{RGB}{153,0,153}
-\definecolor{cud-pink}{RGB}{255,128,130}
-\definecolor{cud-gray}{RGB}{132,145,158}
-
-% \newenvironment{codeblock}
-% {\begin{tcolorbox}[enhanced, breakable=true]\begin{lstlisting}[numbers=left, breaklines=true, basicstyle=\ttfamily, xleftmargin=2.5em, lineskip=-1.4ex]}
-% {\end{lstlisting}\end{tcolorbox}}
 
 \title{DigitShow Modbus（v5.0.x）のいろは}
 \author{
-    Makoto KUNO\thanks{東京大学生産技術研究所桑野研究室技術職員 \faGithub\url{https://github.com/mkt-kuno}} \and 
-    Hiroyuki HASHIMOTO\thanks{東京大学生産技術研究所桑野研究室博士課程 \faGithub\url{https://github.com/Hiroyuki-Hashimoto}} \and 
-    Kohei MASHITA\thanks{東京大学生産技術研究所桑野研究室修士課程 \faGithub\url{https://github.com/k-mashita}}
+    Makoto KUNO\thanks{東京大学生産技術研究所桑野研究室技術職員 \url{https://github.com/mkt-kuno}} \and
+    Hiroyuki HASHIMOTO\thanks{東京大学生産技術研究所桑野研究室博士課程 \url{https://github.com/Hiroyuki-Hashimoto}} \and
+    Kohei MASHITA\thanks{東京大学生産技術研究所桑野研究室修士課程 \url{https://github.com/k-mashita}}
 }
-\titlepic{\includegraphics[width=3cm]{img/kuwanolab-logo.png}}
 
 \begin{document}
-    \maketitle
 
-    \setcounter{tocdepth}{1}
-    \tableofcontents
-
-    \input{quickstart.tex}
-    \input{user_manual.tex}
-    \input{developer_manual.tex}
-
-    \appendix
-    \input{howtotex.tex}
-
-    % \bibliographystyle{jplain}
-    % \bibliography{bibliography}
+\input{quickstart.tex}
+\input{user_manual.tex}
+\input{developer_manual.tex}
+\input{howtotex.tex}
 
 \end{document}
-

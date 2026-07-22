@@ -2,17 +2,17 @@
 ここでは、生研式の三軸試験装置を用いて飽和供試体の三軸圧縮試験を行う際の、DigitShow Modbusの基本的な使い方を示します。
 
 \section{事前準備：ショートカットの作成}
-まず、実行ファイル（\inlinecode{DigitShowModbus.exe}）のショートカットを作成します。
+まず、実行ファイル（\texttt{DigitShowModbus.exe}）のショートカットを作成します。
 
 次に、ショートカットのプロパティを開き、起動時変数の設定を行います。ショートカットの``target（リンク先）''の最後に以下の引数を追加してください。
 \begin{itemize}
-    \item （必須）AD/DAボードと通信するCOMポートを\inlinecode{--port=COM10}や\inlinecode{-p=COM6}のように指定します。AD/DAボードのポート番号は、デバイスマネージャー等で確認しましょう。
+    \item （必須）AD/DAボードと通信するCOMポートを\texttt{--port=COM10}や\texttt{-p=COM6}のように指定します。AD/DAボードのポート番号は、デバイスマネージャー等で確認しましょう。
     \item （試験機によっては必須）動作モードや、クラッチとモータ動作電圧を指定します。詳細はデベロッパーマニュアルを参照してください。
 \end{itemize}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\hsize]{img/DSM_shortcut.png}
-    \caption{ポート指定の例。\inlinecode{--port=COM10}や\inlinecode{-p=COM6}.}
+    \caption{ポート指定の例。}
 \end{figure}
 
 \section{実験前：アプリを開く}
@@ -21,8 +21,7 @@
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\hsize]{img/DSM_main.png}
-    \caption{メイン画面。}
-    \label{fig:dsm_main}
+    \caption{メイン画面。\label{fig:dsm_main}}
 \end{figure}
 
 \section{供試体を設置する前：ロードセルのキャリブレーション値の入力} \label{sec:loadcell_cal}
@@ -31,15 +30,14 @@
     \item キャリブレーション値を設定します。
     \begin{itemize}
         \item 手動で各チャンネルの値を入力する場合：a, b, cの係数に値を入力し、``Update Varients''を押します。
-        \item ファイルを読み込む場合：``Load from a file''をクリックして、\inlinecode{.cal}ファイルを読み込みます。現在の設定を保存する場合、``Save to a file''で保存することができます。
+        \item ファイルを読み込む場合：``Load from a file''をクリックして、\texttt{.cal}ファイルを読み込みます。現在の設定を保存する場合、``Save to a file''で保存することができます。
     \end{itemize}
     \item カウンターバランスを取った状態で、ロードセルのゼロ点を調整をします。ロードセルのチャンネル（CH0）の``Zero''ボタンを押します。そのチャンネルのphysical valueが0になるように、自動的にキャリブレーション値の定数項（c）が変更されます。
 \end{enumerate}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\hsize]{img/DSM_calib.png}
-    \caption{各センサーのキャリブレーション値の入力画面。}
-    \label{fig:dsm_calib}
+    \caption{各センサーのキャリブレーション値の入力画面。\label{fig:dsm_calib}}
 \end{figure}
 
 \section{供試体の寸法計測後：供試体初期寸法の入力}
@@ -50,15 +48,14 @@
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\hsize]{img/DSM_specimen.png}
-    \caption{供試体の情報の入力画面。}
-    \label{fig:dsm_specimen}
+    \caption{供試体の情報の入力画面。\label{fig:dsm_specimen}}
 \end{figure}
 
 \section{載荷装置と三軸セルを接続した後①：変位計のキャリブレーション値の入力}
 \cref{sec:loadcell_cal}と同様にして、変位計（LVDT）のチャンネル（CH1）キャリブレーション値の入力およびゼロ点の調整を行います。
 
 \section{載荷装置と三軸セルを接続した後②：Pre-Consolidation}
-Pre-consolidationは所定の$q$（軸差応力$\ab[\unit{kPa}]$）を保つ制御コマンドです。主に供試体の飽和過程で使用します。デフォルトの設定では、$q=0$なので、等方状態になります。
+Pre-consolidationは所定の$q$（軸差応力$\left[\mathrm{kPa}\right]$）を保つ制御コマンドです。主に供試体の飽和過程で使用します。デフォルトの設定では、$q=0$なので、等方状態になります。
 \begin{enumerate}
     \item メイン画面左下の``Control ID''を 1 にして、``Set''をクリックします。
     \item メイン画面左下の``Start Control''を押すと、制御が始まります。軸受けのクランプを緩め忘れないように気を付けてください。
@@ -86,7 +83,7 @@ Pre-consolidationは所定の$q$（軸差応力$\ab[\unit{kPa}]$）を保つ制�
     \item 左上の``Control''タブで``Control from file''をクリックします。
     \item 圧密・クリープ・軸圧縮の設定を入力します。``Load''を押すとその Step No. の現在の設定が表示され、``Update''を押すとそのStep No.の設定が現在入力している値（パラメータ）に更新されます。
     \item Current Step No. が圧密のstep（0）になっていることを確認してください。
-    \item 設定の一例は\cref{tab:sample_table}の通りです（初期拘束圧\qty{20}{kPa}から、\qty{100}{kPa}で等方圧密し、排水条件で軸ひずみ\qty{15}{\percent}まで単調載荷する場合）：
+    \item 設定の一例は\cref{tab:sample_table}の通りです（初期拘束圧$20\,\mathrm{kPa}$から、$100\,\mathrm{kPa}$で等方圧密し、排水条件で軸ひずみ$15\,\%$まで単調載荷する場合）：
     \begin{itemize}
         \item Step No.1 のCreepの時間は本来予定している時間よりも長くしておくことを推奨します（意図しないタイミングで次のstepに進むのを防ぐため）。
         \item 非排水軸圧縮（CU試験）を行う場合は、載荷中セル圧を変化させる必要がないため、Step No.2のMonotonic Axial LoadingのArgs[02]を0としてください。
@@ -95,7 +92,7 @@ Pre-consolidationは所定の$q$（軸差応力$\ab[\unit{kPa}]$）を保つ制�
     \end{itemize}
     \begin{table}[htbp]
         \centering
-        \caption{Control from file の設定例。}
+        \caption{Control from file の設定例。\label{tab:sample_table}}
         \begin{tabular}{rlrrrrrrr}
             \toprule
             Step No. & Control No. (name) & Para0 & Para1 & Para2 & Para3 & Para4 & Para5 & Para6 \\ \midrule
@@ -103,14 +100,12 @@ Pre-consolidationは所定の$q$（軸差応力$\ab[\unit{kPa}]$）を保つ制�
             1 & 4: Creep & 0 & 10 & 1000 & 10000 & 100 & - & - \\
             2 & 1: Monotonic Axial Loading & 0 & 300 & 100 & 1 & 15 & 0 & 0 \\ \bottomrule
         \end{tabular}
-        \label{tab:sample_table}
     \end{table}
 \end{enumerate}
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\hsize]{img/DSM_ctrl_file.png}
-    \caption{制御の設定の入力画面。}
-    \label{fig:dsm_ctrl_file}
+    \caption{制御の設定の入力画面。\label{fig:dsm_ctrl_file}}
 \end{figure}
 
 

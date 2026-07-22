@@ -1,0 +1,45 @@
+% PDF 出力用の追加プリアンブル (defaults-pdf.yaml から include-in-header で読み込む)
+% Pandoc の LaTeX テンプレートに差し込まれる。HTML 出力では無視される。
+
+% 日本語フォント (原ノ味フォント, deluxe)
+\usepackage[deluxe,haranoaji]{luatexja-preset}
+
+% [H] 指定の図を許可
+\usepackage{float}
+\usepackage{xcolor}
+
+% タイトルページにロゴを表示
+\usepackage[cc]{titlepic}
+\AtBeginDocument{\titlepic{\includegraphics[width=3cm]{img/kuwanolab-logo.png}}}
+
+% 目次は章・節まで
+\setcounter{tocdepth}{1}
+
+% 図表番号を「章番号.連番」とし、Pandoc が本文中に埋め込む参照番号 (1.1 等) と一致させる
+\makeatletter
+\@addtoreset{figure}{chapter}
+\@addtoreset{table}{chapter}
+\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
+\renewcommand{\thetable}{\thechapter.\arabic{table}}
+% listings で日本語コメントを扱うためのおまじない
+\def\lst@lettertrue{\let\lst@ifletter\iffalse}
+\makeatother
+
+% コードブロック (listings) のスタイル
+\lstset{
+    numbers=left,
+    breaklines=true,
+    basicstyle=\ttfamily\small,
+    numberstyle=\ttfamily\color{gray},
+    xleftmargin=2.5em,
+    lineskip=-0.4ex,
+    tabsize=4,
+    breakindent=0mm,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    frame=single,
+    framerule=0.2pt,
+    rulecolor=\color{gray!50},
+    backgroundcolor=\color{gray!10},
+}

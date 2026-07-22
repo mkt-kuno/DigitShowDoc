@@ -26,19 +26,19 @@ DigitShowModbusは、以下の2つの動作モードを持ちます。
 すべての起動時変数については、\cref{sec:startup_variable_developer}を参照してください。
 
 起動時変数を設定するには、実行ファイル（DigitShowModbus.exe）のショートカットを作成し、ショートカットのプロパティを開いてください。
-\emph{Target}で、実行ファイルのパスの後に、半角スペースを開けてから、以下に示す各種の起動時変数の指定を行ってください。
+\emph{Target}で、実行ファイルのパスの後に、半角スペースを開けてから、以下に示す各種の起動時変数の指定を行ってください。図の例では\texttt{-p=COM3}でCOMポートを指定しています。
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\hsize]{img/DSM_shortcut.png}
-    \caption{ショートカットのプロパティを利用した起動時変数の設定例（ここでは\inlinecode{-p=COM3}でCOMポートを指定している）。}
+    \caption{ショートカットのプロパティを利用した起動時変数の設定例。}
 \end{figure}
 
 \subsection{ModbusRTU COM Port}
-完全表記が\inlinecode{--port=}、短縮表記が\inlinecode{-p=}です。
+完全表記が\texttt{--port=}、短縮表記が\texttt{-p=}です。
 
 ModbusRTUボードとの通信に使用するCOMポートを指定するための引数です。
-\inlinecode{--port=COM10}や\inlinecode{-p=COM6}のように指定します。
+\texttt{--port=COM10}や\texttt{-p=COM6}のように指定します。
 ModbusRTUボードのうち、Trio（v1）・Quartet（v2）では、製造時期や互換ボードかどうかによって、FT232やCH340など、何かしらのUSBシリアル変換ICを使用しているため、デバイスマネージャー等で確認しましょう。
 また、動作際してはドライバが必要になります。
 ArduinoIDEをインストールするか、多くの場合WindowsUpdateのAdditional Updateでドライバがインストール可能です。
@@ -50,7 +50,7 @@ Yamanin（v3）では、USB-CDC（ACM）を使用した高速・高信頼のシ�
 \end{figure}
 
 \subsection{動作モード}
-完全表記が\inlinecode{--mode=}、短縮表記が\inlinecode{-m=}です。
+完全表記が\texttt{--mode=}、短縮表記が\texttt{-m=}です。
 
 ``0''もしくは``motor''を指定することで生研式モータ動作モードで起動します。
 
@@ -60,44 +60,40 @@ Yamanin（v3）では、USB-CDC（ACM）を使用した高速・高信頼のシ�
 Debugビルドで試用して、安全性を確認してから長期運用してください。
 
 \subsection{クラッチ\&モータ動作電圧}
-完全表記が\inlinecode{--invert\_motor\_enable=}、短縮表記が\inlinecode{-ime=}です。
+完全表記が\texttt{--invert\_motor\_enable=}、短縮表記が\texttt{-ime=}です。
 
-完全表記が\inlinecode{--invert\_motor\_direction=}、短縮表記が\inlinecode{-imd=}です。
+完全表記が\texttt{--invert\_motor\_direction=}、短縮表記が\texttt{-imd=}です。
 
 ``True''もしくは``true''、``1''を指定することで極性が反転します。
 デフォルト状態はソースコードの確認をしてください。大きな変更が加わっていない限りは、
-``モータON''が``\SI{5.0}{[V]}''、``モータOFF''が``\SI{0.0}{[V]}''。
-同じように``モータUP''が``\SI{5.0}{[V]}''、``モータDOWN''が``\SI{0.0}{[V]}''です。
+``モータON''が``$5.0\,\mathrm{[V]}$''、``モータOFF''が``$0.0\,\mathrm{[V]}$''。
+同じように``モータUP''が``$5.0\,\mathrm{[V]}$''、``モータDOWN''が``$0.0\,\mathrm{[V]}$''です。
 コードを検索する場合は下記のような記述を探してください。
-\begin{tcbcodeblock}{CDigitShowModbus.cpp より抜粋 }
-    \begin{lstcodeblock}[language=C++]
+\begin{lstlisting}[language=C++,caption={CDigitShowModbus.cpp より抜粋 }]
 #define DSM_AO_DEF_VLT_MOTOR_ON (5.0f)			// Voltage of Axial Motor ON
 #define DSM_AO_DEF_VLT_MOTOR_OFF (0.0f)			// Voltage of Axial Motor OFF
 #define DSM_AO_DEF_VLT_MOTOR_UP (5.0f)			// Voltage of Axial Motor UP
 #define DSM_AO_DEF_VLT_MOTOR_DOWN (0.0f)		// Voltage of Axial Motor DOWN
-\end{lstcodeblock}
-\end{tcbcodeblock}
+\end{lstlisting}
 
 \subsection{Webサーバー機能}
-完全表記が\inlinecode{--listen=}、短縮表記が\inlinecode{-l=}です。
+完全表記が\texttt{--listen=}、短縮表記が\texttt{-l=}です。
 地下実験室にいなくても、同一ネットワーク内であれば、研究室のパソコンからモニタリングが可能になります。
-同一PCでたくさんチャートを見たいだけなら\inlinecode{--listen="localhost:80"}を、
-実験室の他のパソコンからも見たいなら\inlinecode{--listen="0.0.0.0:80"}を設定してください。
-\inlinecode{https://github.com/mkt-kuno/DigitShowWebview/}のRelease版をダウンロードして、
-実行中の\inlinecode{DigitShowModbus.exe}と同じフォルダに置くと、簡単にリモートモニタリングが可能です。
+同一PCでたくさんチャートを見たいだけなら\texttt{--listen="localhost:80"}を、
+実験室の他のパソコンからも見たいなら\texttt{--listen="0.0.0.0:80"}を設定してください。
+\texttt{https://github.com/mkt-kuno/DigitShowWebview/}のRelease版をダウンロードして、
+実行中の\texttt{DigitShowModbus.exe}と同じフォルダに置くと、簡単にリモートモニタリングが可能です。
 複雑な表示がしたい人は自分でコーディングしてください。
 フォルダ構成は以下のようになります。
 
-\begin{tcbcodeblock}{Webサーバー機能有効時のフォルダ構成例}
-    \begin{lstcodeblock}[]
+\begin{lstlisting}[caption={Webサーバー機能有効時のフォルダ構成例}]
 DigitShowModbus.exe
 modbus-5.dll
 www/
 ├── index.html
 ├── ~~~~~.css
 └── ~~~~~.js
-    \end{lstcodeblock}
-\end{tcbcodeblock}
+\end{lstlisting}
 
 \section{センサーと入力チャンネル構成}
 ここでは標準的なセンサーと入力チャンネルの構成について説明します。
@@ -113,7 +109,7 @@ CH0-7までがひずみゲージ式のセンサーの信号の受け取りに、
 
 \subsection{（任意）CH2,3:LDT（局所変位計）}
 LDTはLocal Displacement Transducerの略で、Goto et al. (1991)によって開発された供試体の局所軸ひずみを計測するためのセンサーです。供試体側面上の2
-点問の軸圧縮量から局所軸ひずみを求めます。ベディングエラー（「外部変位計などによってキャップや載荷ピストンの軸変位から求めた軸ひずみ」に含まれる測定誤差）の無い正確な軸ひずみを求めることができます。計測できる最大ひずみは1$\si{\percent}$程度ですが、微小なひずみを正確に計測することができます。供試体の直径方向に対称に1組設置し、2つのLDTで計測された値の平均値を用います。なお、LDTの設置は任意であり、使用しなくてもプログラムの動作に影響はありません。
+点問の軸圧縮量から局所軸ひずみを求めます。ベディングエラー（「外部変位計などによってキャップや載荷ピストンの軸変位から求めた軸ひずみ」に含まれる測定誤差）の無い正確な軸ひずみを求めることができます。計測できる最大ひずみは$1\,\%$程度ですが、微小なひずみを正確に計測することができます。供試体の直径方向に対称に1組設置し、2つのLDTで計測された値の平均値を用います。なお、LDTの設置は任意であり、使用しなくてもプログラムの動作に影響はありません。
 
 \subsection{CH4-7:空きチャンネル}
 ひずみゲージ式の各種センサーを接続することができる空きチャンネルです。
@@ -162,7 +158,7 @@ EPは電空レギュレータ(Electrical-Pneumatic converter)の略称で、電�
 Before Consolidationを押す時点でのLVDTで計測された変位を$\delta_\mathrm{BC}$とします。等方的な変形が生じた（軸ひずみの3倍の体積ひずみが生じた）という仮定のもと、供試体寸法のレファレンス値（圧密前高さ$h_\mathrm{BC}$、圧密前体積$V_\mathrm{BC}$、圧密前直径$d_\mathrm{BC}$）は次のように更新されます。
 \begin{align}
     h_\mathrm{BC} &= h_\mathrm{init} - \delta_\mathrm{BC} \\
-    V_\mathrm{BC} &= V_\mathrm{init} \ab(1 - \frac{3\delta_\mathrm{BC}}{h_\mathrm{init}}) \\
+    V_\mathrm{BC} &= V_\mathrm{init} \left(1 - \frac{3\delta_\mathrm{BC}}{h_\mathrm{init}}\right) \\
     d_\mathrm{BC} &= \sqrt{\frac{4V_\mathrm{BC}}{\pi h_\mathrm{BC}}}
 \end{align}
 
@@ -182,16 +178,16 @@ After Consolidationを押す時点でのLVDTで計測された変位を$\delta_\
 \end{align}
 
 \subsection{ひずみ}
-現在の高さを$h$、体積を$V$とし、レファレンス高さを$h_\mathrm{ref}$、体積を$V_\mathrm{ref}$とします。このとき、軸ひずみ$\varepsilon_\mathrm{a} \ \ab[\si{\percent}]$, 体積ひずみ$\varepsilon_\mathrm{v} \ \ab[\si{\percent}]$, 半径方向ひずみ$\varepsilon_\mathrm{r} \ \ab[\si{\percent}]$は次のように計算されます。
+現在の高さを$h$、体積を$V$とし、レファレンス高さを$h_\mathrm{ref}$、体積を$V_\mathrm{ref}$とします。このとき、軸ひずみ$\varepsilon_\mathrm{a}\ \left[\%\right]$, 体積ひずみ$\varepsilon_\mathrm{v}\ \left[\%\right]$, 半径方向ひずみ$\varepsilon_\mathrm{r}\ \left[\%\right]$は次のように計算されます。
 \begin{align}
-    \varepsilon_\mathrm{a} &= \ab(1 - \frac{h}{h_\mathrm{ref}}) \times 100 \\
-    \varepsilon_\mathrm{v} &= \ab(1 - \frac{V}{V_\mathrm{ref}}) \times 100 \\
-    \varepsilon_\mathrm{r} &= \ab(1 - \sqrt{\frac{1-\varepsilon_\mathrm{v}}{1-\varepsilon_\mathrm{a}}}) \times 100
+    \varepsilon_\mathrm{a} &= \left(1 - \frac{h}{h_\mathrm{ref}}\right) \times 100 \\
+    \varepsilon_\mathrm{v} &= \left(1 - \frac{V}{V_\mathrm{ref}}\right) \times 100 \\
+    \varepsilon_\mathrm{r} &= \left(1 - \sqrt{\frac{1-\varepsilon_\mathrm{v}}{1-\varepsilon_\mathrm{a}}}\right) \times 100
 \end{align}
 
 なお、昔のプログラム（DigitShowBasic）では、真ひずみが使用されていました。
 地盤工学会の基準は公称ひずみを採用していたため、DigitShowModbusではよりシンプルに公称ひずみを採用しました。
-ひずみ10\si{\percent}くらいまでであれば、両者の差は小さいですが、変形が大きくなるほど、公称ひずみ（現プログラム）と真ひずみ（旧プログラム）の差が大きくなります。既往研究との比較をする際には注意してください。
+ひずみ$10\,\%$くらいまでであれば、両者の差は小さいですが、変形が大きくなるほど、公称ひずみ（現プログラム）と真ひずみ（旧プログラム）の差が大きくなります。既往研究との比較をする際には注意してください。
 真ひずみはひずみの足し合わせができることが利点とされるようです。
 必要に応じて、事後的に自分で計算してください。
 
@@ -211,7 +207,7 @@ HCDPTの計測する値がそのまま半径方向の有効応力${\sigma'}_\mat
 LDT(Local Displacement Transducer)を使用した場合、鉛直方向の局所ひずみを計算することができます。LDTのレファレンス長さを$LDT_\mathrm{ref}$、LDTで計測された局所変位を$\delta_\mathrm{LDT}$とします。このとき、現在のLDTの長さ$LDT$と局所鉛直ひずみ$\varepsilon_\mathrm{LDT}$は次のように計算されます。
 \begin{align}
     LDT &= LDT_\mathrm{ref} - \delta_\mathrm{LDT} \\
-    \varepsilon_\mathrm{LDT} &= \ab(1 - \frac{LDT}{LDT_\mathrm{ref}}) \times 100
+    \varepsilon_\mathrm{LDT} &= \left(1 - \frac{LDT}{LDT_\mathrm{ref}}\right) \times 100
 \end{align}
 なお、LDTは、供試体のひねり状態の補正するために、供試体の直径方向に対象に1組設置し、2つのLDTで計測された$\varepsilon_\mathrm{LDT}$の平均値を用いることが推奨されます。
 
@@ -223,14 +219,13 @@ LDT(Local Displacement Transducer)を使用した場合、鉛直方向の局所�
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\hsize]{img/DSM_main_add_inst.png}
-    \caption{メイン画面。}
-    \label{fig:dsm_main_add_inst}
+    \caption{メイン画面。\label{fig:dsm_main_add_inst}}
 \end{figure}
 
 \begin{enumerate}
     \item メイン画面の左上にあるタブから、キャリブレーションや供試体の情報、コントロール設定などに関する各ウィンドウ（次項以降で詳述）を開くことができます。
     \item Raw Valueでは、センサーからAD変換されたデジタル信号の生データを表示します。最小値は-32768、最大値は32767のint16型の値が表示されます。
-    \item Physical Valueでは、Raw Valueをキャリブレーション値を用いて物理量($\si{N}$や$\si{mm}$など)に変換した値を表示します。
+    \item Physical Valueでは、Raw Valueをキャリブレーション値を用いて物理量($\mathrm{N}$や$\mathrm{mm}$など)に変換した値を表示します。
     \item Parametersでは、応力ひずみや、供試体の現在の寸法、レファレンス寸法などが表示されます。これらの値は、Physical Valueや供試体寸法の情報をもとに計算された値です。
     \item Voltage Outでは、\ref{sec:output_channel}節に示すアナログ電圧出力値の情報が表示されます。
     \item Plotでは、Raw ValueやPhysical Value、Parametersの値の変化をグラフで表示します。データ保存中は最大512点まで表示されます。保存していないときは、最新60秒のデータが表示されます。
@@ -245,8 +240,7 @@ EPを三軸セルに接続する前に、EPの出力圧力を調整する際に�
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\hsize]{img/DSM_VoltOut.png}
-    \caption{DA Output - Voltage Outputウィンドウ。}
-    \label{fig:dsm_VoltOut}
+    \caption{DA Output - Voltage Outputウィンドウ。\label{fig:dsm_VoltOut}}
 \end{figure}
 
 \subsection{Specimen - Config}
@@ -254,8 +248,7 @@ EPを三軸セルに接続する前に、EPの出力圧力を調整する際に�
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\hsize]{img/DSM_specimen.png}
-    \caption{Specimen - Configウィンドウ。}
-    \label{fig:dsm_SpecimenConfig}
+    \caption{Specimen - Configウィンドウ。\label{fig:dsm_SpecimenConfig}}
 \end{figure}
 TDB...
 
@@ -265,8 +258,7 @@ Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.4\hsize]{img/DSM_PreCons.png}
-    \caption{Control - Pre-Consolidationウィンドウ。}
-    \label{fig:dsm_PreCons}
+    \caption{Control - Pre-Consolidationウィンドウ。\label{fig:dsm_PreCons}}
 \end{figure}
 
 \subsection{Control - Control from file}
@@ -274,8 +266,7 @@ Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\hsize]{img/DSM_ctrl_file_add_inst.png}
-    \caption{Control - Control from fileウィンドウ。}
-    \label{fig:dsm_CtrlFile}
+    \caption{Control - Control from fileウィンドウ。\label{fig:dsm_CtrlFile}}
 \end{figure}
 \begin{enumerate}
     \item 現在のControlのStep No.が表示されます。チェックボックスを選択した上で、矢印ボタンをクリックするとStep No.のインクリメント・デクリメントができます。なお、設定可能なStep No.は0から1023までです。
@@ -290,8 +281,7 @@ Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\hsize]{img/DSM_Version.png}
-    \caption{Other - Versionウィンドウ。}
-    \label{fig:dsm_Version}
+    \caption{Other - Versionウィンドウ。\label{fig:dsm_Version}}
 \end{figure}
 
 \subsection{Other - Environmental Variables}
@@ -300,8 +290,7 @@ Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\hsize]{img/DSM_envval.png}
-    \caption{Other - Environmental Variablesウィンドウ。}
-    \label{fig:dsm_env}
+    \caption{Other - Environmental Variablesウィンドウ。\label{fig:dsm_env}}
 \end{figure}
 
 \subsection{Other - Open Log Folder}
@@ -318,35 +307,14 @@ Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体
 \subsection{Pre-Consolidation}
 Pre-Consolidationは、供試体の飽和過程で使用するコントロールです。
 \cref{fig:precon-q-rpm}に示すように、設定した軸差応力を保つように載荷軸を上下させます。
-デフォルトの設定では、$q=\qty{0}{\kPa}$なので、等方状態を保とうとします。
+デフォルトの設定では、$q=0\,\mathrm{kPa}$なので、等方状態を保とうとします。
 
 軸差応力が目標値から離れれば離れるほど、高速でモーターを回転させて載荷軸を上下させます（いわゆるP制御のようなもの）。
-ただし、クラッチの消耗を防ぐため、軸差応力が\qty{0.5}{\kPa}以下しか離れていないのであれば、載荷軸は動かないようにプログラムされています（この閾値はユーザーからは設定できません）。
-\begin{figure}
+ただし、クラッチの消耗を防ぐため、軸差応力が$0.5\,\mathrm{kPa}$以下しか離れていないのであれば、載荷軸は動かないようにプログラムされています（この閾値はユーザーからは設定できません）。
+\begin{figure}[htbp]
     \centering
-    \begin{tikzpicture}
-        % 原点の描画
-        \draw[{Stealth[]}-] (0, 0) to[bend right] (-1.5, 1) node[left] {$\ab(\text{target\_deviator\_stress}, 0)$};
-        % 座標軸の描画
-        \draw[-{Stealth[]}] (-5, 0) -- (5, 0) node[below] {$q\ \ab[\unit{\kPa}]$};
-        \draw[-{Stealth[]}] (0, -3) -- (0, 3) node[above right] {motor speed $\ab[\unit{RPM}]$};
-        % q と motor speed の対応関係
-        \draw[blue, ultra thick] (-5, -2.5) -- (-2.5, -2.5) -- (-1, -1);
-        \draw[dashed] (-1, -1) -- (-1, 0);
-        \draw[blue, ultra thick] (-1, 0) -- (1, 0);
-        \draw[dashed] (1, 0) -- (1, 1);
-        \draw[blue, ultra thick] (5, 2.5) -- (2.5, 2.5) -- (1, 1);
-        % max motor speed
-        \draw[dashed] (2.5, 2.5) -- (0, 2.5) node[below left] {max\_motor\_speed};
-        \fill (0, 2.5) circle (0.75mm);
-        % モーターを動かさない閾値
-        \draw[dashed] (2.5, 2.5) -- (2.5, 0);
-        \draw[{Stealth[]}-{Stealth[]}] (0, -0.4) -- (1, -0.4) node[midway, below] {0.5};
-        % q error at max motor speed
-        \draw[{Stealth[]}-{Stealth[]}] (0, 0.4) -- (2.5, 0.4) node[right] {q\_error\_at\_max\_motor\_speed};
-    \end{tikzpicture}
-    \caption{Pre-Consolidationの動作のイメージ}
-    \label{fig:precon-q-rpm}
+    \includegraphics[width=0.9\hsize]{img/precon_q_rpm.png}
+    \caption{Pre-Consolidationの動作のイメージ\label{fig:precon-q-rpm}}
 \end{figure}
 
 \subsection{Control from file - 0: Stop}
@@ -375,7 +343,7 @@ Control No.1: Monotonic Axial Loadingは、単調軸圧縮・軸伸長を行う�
     \item Args[01]: モーターの回転速度。単位はRPM。RPMと実際の載荷速度の関係は試験機および減速機の設定などによって異なるため、予め確認しておく必要があります。
     \item Args[02]: 半径方向の有効応力。単位はkPa。正の値が入力されたときのみ、EPでセル圧を制御することで、円周方向の有効応力を設定された値に保ちます（0以下の値が入力された場合、EPの出力圧力は変化しません）。逆に、非排水三軸試験を行う場合には、必ず0を入力してください。
     \item Args[03]: 軸ひずみのリミッター設定を行うか否か。1で有効化、0で無効化。リミッターを有効化した場合、Args[04]で設定された値を超えるひずみが計測された場合に次のStep No.に進みます。
-    \item Args[04]: 軸ひずみのリミッター値。単位は\si{\percent}。Args[03]でリミッターを有効化した場合に、Args[04]で設定された値を超えるひずみが計測された場合に次のStep No.に進みます。
+    \item Args[04]: 軸ひずみのリミッター値。単位は\%。Args[03]でリミッターを有効化した場合に、Args[04]で設定された値を超えるひずみが計測された場合に次のStep No.に進みます。
     \item Args[05]: 軸差応力のリミッター設定を行うか否か。1で有効化、0で無効化。リミッターを有効化した場合、Args[06]で設定された値を超える軸差応力が計測された場合に次のStep No.に進みます。
     \item Args[06]: 軸差応力のリミッター値。単位はkPa。Args[05]でリミッターを有効化した場合に、Args[06]で設定された値を超える軸差応力が計測された場合に次のStep No.に進みます。
 \end{itemize}
@@ -400,8 +368,8 @@ Control No.3: Cyclic Axial Loading Between Specified STRAIN Limitsは、指定�
 \begin{itemize}
     \item Args[00]: 圧縮(compression)か伸長(extension)か。0が圧縮、1が伸長です。
     \item Args[01]: モーターの回転速度。単位はRPM。RPMと実際の載荷速度の関係は試験機および減速機の設定などによって異なるため、予め確認しておく必要があります。
-    \item Args[02]: 軸ひずみの下限値。単位は\si{\percent}。
-    \item Args[03]: 軸ひずみの上限値。単位は\si{\percent}。
+    \item Args[02]: 軸ひずみの下限値。単位は\%。
+    \item Args[03]: 軸ひずみの上限値。単位は\%。
     \item Args[04]: 何サイクル載荷を行うか。所定のサイクル数の載荷を終えた場合、次のStep No.に進みます。
     \item Args[05]: 半径方向の有効応力。単位はkPa。正の値が入力されたときのみ、EPでセル圧を制御することで、円周方向の有効応力を設定された値に保ちます（0以下の値が入力された場合、EPの出力圧力は変化しません）。逆に、非排水三軸試験を行う場合には、必ず0を入力してください。
 \end{itemize}
