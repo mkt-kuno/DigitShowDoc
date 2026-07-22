@@ -1,7 +1,7 @@
 # ドキュメント作成ガイド
 
 本ドキュメントは GitHub Flavored Markdown (GFM) で書かれています。
-GitHub リポジトリ上で直接閲覧でき、PDF 生成は行いません。
+GitHub リポジトリ上で直接閲覧でき、Jekyll により GitHub Pages でも公開しています（PDF 生成は行いません）。
 
 ## 構成
 
@@ -15,8 +15,8 @@ GitHub リポジトリ上で直接閲覧でき、PDF 生成は行いません。
 
 ## 見出し構造
 
-各ファイルの先頭に `# ドキュメント名` を置き、`\chapter` に相当させます。
-`\section` → `##`、`\subsection` → `###`、`\subsubsection` → `####` とします。
+各ファイルの先頭に `# ドキュメント名` を置きます（LaTeX の `\chapter` に相当）。
+`##`、`###`、`####` と階層を下げます（`\section`・`\subsection`・`\subsubsection` に相当）。
 
 先頭の `#` 直後に `## 目次` を配置し、このファイルの `##` セクションへのリンク一覧を記載します。
 
@@ -47,25 +47,25 @@ GitHub のアンカーリンク（スラッグ）は以下のように生成さ�
 
 ### テキスト装飾
 
-| LaTeX | Markdown |
-|-------|----------|
-| `\texttt{...}` | `` `...` `` |
-| `\emph{...}` | `**...**` |
-| `\url{...}` | URL そのまま（自動リンク化） |
-| ``` ``...'' ``` | `"..."` （カーリークォート） |
-| `\%` `\&` `\_` | `%` `&` `_` |
+| 意味 | Markdown | 備考（LaTeX からの移行時） |
+|-----|----------|--------------------------|
+| コード片 | `` `...` `` | `\texttt{...}` に代わる |
+| 強調 | `**...**` | `\emph{...}` に代わる |
+| URL | URL そのまま | 自動リンク化される |
+| 引用符 | `"..."` | ``` ``...'' ``` に代わる |
+| 特殊文字 | `%` `&` `_` | `\%` `\&` `\_` のエスケープ解除 |
 
 ### リスト
 
-- itemize → `-`
-- enumerate → `1.` `2.` `3.`…
-- description の `\item[用語] 説明` → `- **用語**: 説明`
+- 順序なしリストは `-`
+- 順序付きリストは `1.` `2.` `3.`…
+- 用語付きリストは `- **用語**: 説明`（LaTeX の `\item[用語] 説明` に代わる）
 
 ネスト時は親リストの本文開始位置に揃えてインデントします。
 
 ### 数式
 
-GitHub は MathJax により数式をレンダリングします。
+GitHub は MathJax により数式をレンダリングします。Jekyll（GitHub Pages）でも `assets/css` なしで MathJax を読み込む `_layouts/default.html` で対応しています。
 
 - インライン: `$...$`
 - ディスプレイ: `$$` で囲み、`align` 環境はそのまま使用:
@@ -78,12 +78,12 @@ $$
 $$
 ```
 
-`siunitx` の `\SI{100}{\kPa}` 等は `$100\,\mathrm{kPa}$` のように直接数式で記述します。
-`physics2` の `\ab(x)` は `\left(x\right)` に置き換えます。
+単位は `$100\,\mathrm{kPa}$` のように直接数式で記述します（`siunitx` の `\SI{100}{\kPa}` に代わる）。
+`\ab(x)` は `\left(x\right)` に置き換えます。
 
 ### コードブロック
 
-`lstlisting` 環境はフェンスコードブロックに変換します。
+フェンスコードブロック（` ``` `）を使用します。
 言語指定は `C++` → `cpp`、JSON → `json`、指定なし → 言語タグなしとします。
 
 ````markdown
@@ -98,7 +98,7 @@ $$
 
 ### 図
 
-`includegraphics` は Markdown の画像記法に変換します。
+画像は Markdown の画像記法を使用します。
 
 ```markdown
 ![メイン画面。](img/DSM_main.png)
@@ -110,8 +110,8 @@ $$
 
 ### 表
 
-`tabular` 環境は GFM パイプテーブルに変換します。
-`\caption` は `*表: キャプション*` として表の直前に置きます。
+GFM パイプテーブルを使用します。
+キャプションは `*表: キャプション*` として表の直前に置きます。
 列揃えは `tabular` の指定に従い、`:---`（左揃え）、`---:`（右揃え）、`:-:`（中央揃え）とします。
 
 ```markdown
@@ -139,17 +139,21 @@ GitHub Markdown には図表の自動番号機能がないため、手動でリ�
 [Pre-Consolidation](#pre-consolidation)節の図を参照。
 ```
 
-`\cref{sec:loadcell_cal}` は `[供試体を設置する前：ロードセルのキャリブレーション値の入力](#供試体を設置する前ロードセルのキャリブレーション値の入力)節` のように変換してください。
-
 ## ファイル構成
 
 ```text
 DigitShowDoc/
+├── README.md              # プロジェクト概要
 ├── quickstart.md          # クイックスタート
 ├── user_manual.md         # ユーザーマニュアル
 ├── developer_manual.md    # デベロッパーマニュアル
-├── howtotex.md            # ドキュメント作成ガイド（このファイル）
-├── README.md              # プロジェクト概要
+├── howtomd.md             # ドキュメント作成ガイド（このファイル）
+├── _config.yml            # Jekyll 設定
+├── _layouts/
+│   └── default.html       # 共通レイアウト（MathJax 読込）
+├── assets/
+│   └── css/
+│       └── style.css      # 共通スタイル
 ├── img/                   # 画像ファイル
 │   ├── DSM_*.png
 │   ├── dev/
@@ -157,6 +161,9 @@ DigitShowDoc/
 │   ├── vs2022/
 │   │   └── *.png
 │   └── precon_q_rpm.png
+└── .github/
+    └── workflows/
+        └── pages.yml      # GitHub Pages デプロイ
 ```
 
 ## 注意事項
@@ -164,3 +171,4 @@ DigitShowDoc/
 - pandoc や LuaLaTeX は使用しません。全ての Markdown ファイルは手書きで作成します。
 - 画像は事前に `img/` に配置し、パスは相対パスで指定します。
 - 数式内の LaTeX コマンド（`\mathrm`、`\left`、`\right`、`\frac` 等）はそのまま残します。
+- `_layouts/default.html` で MathJax を読み込むため、Pages 上でも数式が表示されます。
