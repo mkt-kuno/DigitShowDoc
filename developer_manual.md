@@ -459,7 +459,7 @@ $24\,\mathrm{bit}$精度のADCを搭載した、内臓で128倍のゲインを�
 
 HX711のint16_t（i16）物理値から$\mathrm{mV/V}$、もしくは$\mu\varepsilon$への定格出力値への変換については、以下の式を使用してください。
 
-{% raw %}$$
+$$
 \begin{align}
     \Delta e            &= \frac{E}{4} K\varepsilon  & \left[\mathrm{V}\right] \\
     \varepsilon         &= \frac{4\Delta e}{KE} & \left[\varepsilon\right]\\
@@ -468,16 +468,16 @@ HX711のint16_t（i16）物理値から$\mathrm{mV/V}$、もしくは$\mu\vareps
     \mu\varepsilon      &= \frac{\mathrm{Raw}_\mathrm{i16}}{\mathrm{INT16\_MAX} \times \mathrm{HX711\_GAIN} \times \mathrm{DIFF}} \times K \times 1\mathrm{E}6 & \\
                         &= \frac{\mathrm{Raw}_\mathrm{i16}}{32767 \times 128 \times 2} \times 2.0 \times 1\mathrm{E}6 & \left[\mu\varepsilon\right]
 \end{align}
-$${% endraw %}
+$$
 
-{% raw %}$$
+$$
 \begin{align}
     \Delta e    &: \text{負荷時の出力電圧} & \left[\mathrm{V}\right] \\
     E           &: \text{印加電圧} & \left[\mathrm{V}\right]  \\
     K           &: \text{ゲージ率（殆どの場合2.0）} &   \\
     \varepsilon &: \text{ひずみ} & 
 \end{align}
-$${% endraw %}
+$$
 
 ### 汎用入力IC：ADS1115
 シングルエンド入力と差動入力が可能な$16\,\mathrm{bit}$精度のADCを搭載した、I2C接続のアナログデジタルコンバータです。最大CHはシングルエンドジ4つで、差動入力で2つです。
@@ -499,12 +499,12 @@ ADS1115ののint16_t（i16）物理値の換算表、換算式は以下の表の
 | -8192 | 0xE000 | -1.536 |
 | -32768 | 0x8000 | -6.144 |
 
-{% raw %}$$
+$$
 \begin{align}
     V   &= \frac{\mathrm{Raw}_\mathrm{i16}}{\mathrm{INT16\_MAX}} \times \mathrm{ADS1115\_RANGE} & \\
         &= \frac{\mathrm{Raw}_\mathrm{i16}}{32767} \times 6.114 & \left[\mathrm{V}\right]
 \end{align}
-$${% endraw %}
+$$
 
 ### 電圧出力IC： GP8403
 $12\,\mathrm{bit}$精度のDACを搭載した、I2C接続のデジタルアナログコンバータです。最大CHは2つで、出力電圧範囲は$0$〜$10.0\,\mathrm{V}$です。

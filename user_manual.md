@@ -183,55 +183,55 @@ EPは電空レギュレータ(Electrical-Pneumatic converter)の略称で、電�
 
 試験の最初に、実験者は供試体の初期直径を$d_\mathrm{init}$と初期高さ$h_\mathrm{init}$を測定します。これらをもとに初期体積$V_\mathrm{init}$が次のように計算されます。
 
-{% raw %}$$
+$$
 \begin{align}
     V_\mathrm{init} = \frac{\pi{d_\mathrm{init}}^2h_\mathrm{init}}{4}
 \end{align}
-$${% endraw %}
+$$
 
 Before Consolidationを押す時点でのLVDTで計測された変位を$\delta_\mathrm{BC}$とします。等方的な変形が生じた（軸ひずみの3倍の体積ひずみが生じた）という仮定のもと、供試体寸法のレファレンス値（圧密前高さ$h_\mathrm{BC}$、圧密前体積$V_\mathrm{BC}$、圧密前直径$d_\mathrm{BC}$）は次のように更新されます。
 
-{% raw %}$$
+$$
 \begin{align}
     h_\mathrm{BC} &= h_\mathrm{init} - \delta_\mathrm{BC} \\
     V_\mathrm{BC} &= V_\mathrm{init} \left(1 - \frac{3\delta_\mathrm{BC}}{h_\mathrm{init}}\right) \\
     d_\mathrm{BC} &= \sqrt{\frac{4V_\mathrm{BC}}{\pi h_\mathrm{BC}}}
 \end{align}
-$${% endraw %}
+$$
 
 After Consolidationを押す時点でのLVDTで計測された変位を$\delta_\mathrm{AC}$と、LCDPTで計測された排水量を$W_\mathrm{AC}$とします。これらをもとに、圧密後の供試体寸法のレファレンス値（圧密前高さ$h_\mathrm{AC}$、圧密前体積$V_\mathrm{AC}$、圧密前直径$d_\mathrm{AC}$）は次のように更新されます。
 
-{% raw %}$$
+$$
 \begin{align}
     h_\mathrm{AC} &= h_\mathrm{BC} - \delta_\mathrm{AC} \\
     V_\mathrm{AC} &= V_\mathrm{BC} - W_\mathrm{AC} \\
     d_\mathrm{AC} &= \sqrt{\frac{4V_\mathrm{AC}}{\pi h_\mathrm{AC}}}
 \end{align}
-$${% endraw %}
+$$
 
 #### 供試体の現在の寸法
 
 現在のレファレンスの高さを$h_\mathrm{ref}$、体積を$V_\mathrm{ref}$とします。また、LCDPTで計測された現在の排水量（供試体から出る方向が正）を$W$と、LVDTで計測された鉛直変位（供試体が圧縮する方向が正）を$\delta$とします。このとき、現在の供試体の高さ$h$, 体積$V$と断面積$A$は次のようになります。
 
-{% raw %}$$
+$$
 \begin{align}
     h &= h_\mathrm{ref} - \delta \\
     V &= V_\mathrm{ref} - W \\
     A &= \frac{V}{h}
 \end{align}
-$${% endraw %}
+$$
 
 ### ひずみ
 
 現在の高さを$h$、体積を$V$とし、レファレンス高さを$h_\mathrm{ref}$、体積を$V_\mathrm{ref}$とします。このとき、軸ひずみ$\varepsilon_\mathrm{a}\ \left[\%\right]$, 体積ひずみ$\varepsilon_\mathrm{v}\ \left[\%\right]$, 半径方向ひずみ$\varepsilon_\mathrm{r}\ \left[\%\right]$は次のように計算されます。
 
-{% raw %}$$
+$$
 \begin{align}
     \varepsilon_\mathrm{a} &= \left(1 - \frac{h}{h_\mathrm{ref}}\right) \times 100 \\
     \varepsilon_\mathrm{v} &= \left(1 - \frac{V}{V_\mathrm{ref}}\right) \times 100 \\
     \varepsilon_\mathrm{r} &= \left(1 - \sqrt{\frac{1-\varepsilon_\mathrm{v}}{1-\varepsilon_\mathrm{a}}}\right) \times 100
 \end{align}
-$${% endraw %}
+$$
 
 なお、昔のプログラム（DigitShowBasic）では、真ひずみが使用されていました。
 地盤工学会の基準は公称ひずみを採用していたため、DigitShowModbusではよりシンプルに公称ひずみを採用しました。
@@ -243,32 +243,32 @@ $${% endraw %}
 
 ロードセルが計測する荷重を$F$とします。軸差応力$q$は次式で計算されます。
 
-{% raw %}$$
+$$
 \begin{align}
     q = \frac{F}{A}
 \end{align}
-$${% endraw %}
+$$
 
 HCDPTの計測する値がそのまま半径方向の有効応力${\sigma'}_\mathrm{r}$になります。これらを用いて、軸方向の有効応力${\sigma'}_\mathrm{a}$と平均有効応力$p'$は次のようになります。
 
-{% raw %}$$
+$$
 \begin{align}
     {\sigma'}_\mathrm{a} &= {\sigma'}_\mathrm{r} + q \\
     p' &= \frac{{\sigma'}_\mathrm{a} + 2{\sigma'}_\mathrm{r}}{3} \\
     &= \frac{q + 3{\sigma'}_\mathrm{r}}{3}
 \end{align}
-$${% endraw %}
+$$
 
 ### (LDTを使用した場合のみ)局所鉛直ひずみ
 
 LDT(Local Displacement Transducer)を使用した場合、鉛直方向の局所ひずみを計算することができます。LDTのレファレンス長さを$LDT_\mathrm{ref}$、LDTで計測された局所変位を$\delta_\mathrm{LDT}$とします。このとき、現在のLDTの長さ$LDT$と局所鉛直ひずみ$\varepsilon_\mathrm{LDT}$は次のように計算されます。
 
-{% raw %}$$
+$$
 \begin{align}
     LDT &= LDT_\mathrm{ref} - \delta_\mathrm{LDT} \\
     \varepsilon_\mathrm{LDT} &= \left(1 - \frac{LDT}{LDT_\mathrm{ref}}\right) \times 100
 \end{align}
-$${% endraw %}
+$$
 
 なお、LDTは、供試体のひねり状態の補正するために、供試体の直径方向に対象に1組設置し、2つのLDTで計測された$\varepsilon_\mathrm{LDT}$の平均値を用いることが推奨されます。
 
