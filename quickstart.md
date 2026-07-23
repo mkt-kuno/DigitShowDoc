@@ -104,7 +104,7 @@ Pre-consolidationは所定の q （軸差応力[kPa]）を保つ制御コマン�
 
 *表: Control from file の設定例。*
 
-| Step No. | Control No. (name) | Para0 | Para1 | Para2 | Para3 | Para4 | Para5 | Para6 |
+| Step No. | Control No. (name) | Args0 | Args1 | Args2 | Args3 | Args4 | Args5 | Args6 |
 |---------:|:-------------------|------:|------:|------:|------:|------:|------:|------:|
 | 0 | 5: Linear Stress Path Loading | 20 | 20 | 100 | 100 | 10 | 10 | 1000 |
 | 1 | 4: Creep | 0 | 10 | 1000 | 10000 | 100 | - | - |
