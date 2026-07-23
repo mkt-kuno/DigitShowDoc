@@ -5,7 +5,7 @@ DigitShowModbusのビルド方法や、専用のModbusRTUボードについて�
 
 ## 目次
 - [起動時変数](#起動時変数)
-- [VisualStudio 2022 環境構築](#visualstudio-2022-環境構築)
+- [VisualStudio 2026 環境構築](#visualstudio-2026-環境構築)
 - [コントロールの追加・修正](#コントロールの追加修正)
 - [Modbusボードについて](#modbusボードについて)
 - [各ICの性能と説明](#各icの性能と説明)
@@ -128,11 +128,11 @@ Webサーバー機能を有効にするための引数です。
 例として、そのパソコンからのみアクセス可能で、通常のHTTPポート80で公開する場合は、`--listen="localhost:80"`と指定します。
 他のパソコンからもポート80をアクセス可能にする場合は、`--listen="0.0.0.0:80"`と指定します。
 
-## VisualStudio 2022 環境構築
-Visual Studio 2022 でのビルド方法を記載しています。2025年移行のバージョンについては、Googleで情報を検索し、逐次正しいビルド依存関係を選択してください。
+## VisualStudio 2026 環境構築
+Visual Studio 2026 でのビルド方法を記載しています。2025年移行のバージョンについては、Googleで情報を検索し、逐次正しいビルド依存関係を選択してください。
 
-### VisualStudio 2022のインストール
-MicrosoftからCommunity 2022 のインストーラを取得し実行します。無料版（Community）の最新版をネットから確実にダウンロードしてください。
+### VisualStudio 2026のインストール
+MicrosoftからCommunity 2026 のインストーラを取得し実行します。無料版（Community）の最新版をネットから確実にダウンロードしてください。
 
 ![Microsoft公式ホームページ](img/vs2022/installer.png)
 
