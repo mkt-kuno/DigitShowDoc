@@ -26,8 +26,7 @@ USB CDC-ACMによるダイレクト通信での高速ポーリング処理の有
 InputRegisterの精度をfloat32_t（FloatInputRegister）にすると、
 int16_t で通信されるデータに、小数点以下の値を拡張する形で通信されます。
 その為、キャリブレーションなどに影響はありません。
-完全表記が`--float_intput_reg=`、短縮表記が`-fir=`です。
-"True"もしくは"true"、"1"を指定することでInputRegisterの精度がfloat32_tになります。
+対応ボードでは自動的に精度が拡張されます。
 
 大まかな動作の違いを以下に示します。
 
