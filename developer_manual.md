@@ -15,9 +15,8 @@ DigitShowModbusのビルド方法や、専用のModbusRTUボードについて�
 
 ### ModbusRTU AD/DA Board
 
-2つの起動引数が存在します。
-通信方法が"USBシリアル変換IC"か、"USB CDC-ACMによるマイコンとのダイレクト通信"かの選択が１つめ。
-AnalogInputのInputRegisterが "int16_t" か、"float32_t" かの選択が２つめです。
+通信方法が"USBシリアル変換IC"か、"USB CDC-ACMによるマイコンとのダイレクト通信"かの選択の起動引数が存在します。
+AnalogInputのInputRegisterの"int16_t" / "float32_t" の選択は起動引数では指定できず、`AioBoardOpen()` 内で自動的に判定されます（対応ボードが接続されている場合、レジスタ5000番台の読み取り可否で判定）。
 
 USB CDC-ACMによるダイレクト通信での高速ポーリング処理の有効化には
 完全表記が`--usb_cdc_direct=`、短縮表記が`-ucd=`です。
@@ -84,6 +83,7 @@ DSM v5.0.5 以降のバージョンでは、自動のCOMポート認識機能が
 完全表記が`--baudrate=`、短縮表記が`-b=`です。
 ModbusRTUボードとの通信速度を指定するための引数です。基本的に設定する必要はありません。
 Trio・Quartet・YamaninではないオリジナルのModbusボードを使用する際に利用してください。
+既定値は 38400 bps です。
 
 ### フォント
 完全表記が`--font=`、短縮表記が`-f=`です。
@@ -100,6 +100,19 @@ Trio・Quartet・YamaninではないオリジナルのModbusボードを使用�
 
 基本的にMotor動作モードで起動することをお勧めします。ねじりモードは開発中です。
 Debugビルドで試用して、安全性を確認してから長期運用してください。
+
+動作モードによってアプリの背景色が異なります：
+
+- Motor モード（既定）：`#002020`（深緑色）
+- Torsional モード（`--mode=1` / `--mode=torsional`）：`#000030`（濃紺）
+
+### 引数書式に関する共通仕様
+すべての起動引数には、以下の共通仕様に従う必要があります。
+
+- 引数のキー名・真偽値は**大小文字を区別**します。例えば `--LISTEN=` は無視され、`True`/`true`/`1` のみが真と解釈されます。
+- 引数は `--key=value` または `-k=value` の形式のみ受け付けます。空白で区切る `--key value` 形式は不可です。
+- 不明なキーや不正な値は無視されます。その場合、アプリは既定値で動作します。
+- 引数は複数指定可能ですが、同じキーが複数回ある場合は**最初の値が採用**されます。
 
 ### クラッチ&モータ動作電圧
 完全表記が`--invert_motor_enable=`、短縮表記が`-ime=`です。
@@ -121,6 +134,8 @@ Debugビルドで試用して、安全性を確認してから長期運用して
 #define DSM_AO_DEF_VLT_MOTOR_DOWN (0.0f)		// Voltage of Axial Motor DOWN
 ```
 
+なお、`--invert_motor_enable=` / `--invert_motor_direction=` は Motor 動作モードの電圧極性にのみ影響し、Torsional 動作モード（`--mode=torsional`）の極性には影響しません。
+
 ### Webサーバー機能
 完全表記が`--listen=`、短縮表記が`-l=`です。
 Webサーバー機能を有効にするための引数です。
@@ -128,6 +143,21 @@ Webサーバー機能を有効にするための引数です。
 引数では公開範囲とポートを指定します。
 例として、そのパソコンからのみアクセス可能で、通常のHTTPポート80で公開する場合は、`--listen="localhost:80"`と指定します。
 他のパソコンからもポート80をアクセス可能にする場合は、`--listen="0.0.0.0:80"`と指定します。
+
+### 設定ファイルの自動保存・復元
+キャリブレーション係数（a/b/c）、Chart軸選択、AO Cal（a/b）などのユーザー設定は、`%APPDATA%\DigitShowModbus\config.json` に自動保存・復元されます。
+- アプリ起動時（`CDigitShowModbusDoc` のコンストラクタ内）に `AutoRestoreFromJsonConfig()` が呼ばれ、前回終了時の設定ファイルを読み込みます。
+- アプリ終了時（`CDigitShowModbusDoc` のデストラクタ内）に `AutoSaveToJsonConfig()` が呼ばれ、同じファイルへ自動保存します。
+- ファイルが存在しない、または読み込みに失敗した場合は、警告ログを出した上で既定値で起動します。
+
+### 多重起動防止
+同じ Mutex 名 `"DigitShowModbus Application"` を用いて多重起動を防止しています。既に DigitShowModbus が起動している状態で 2 つ目を起動しようとすると、メッセージダイアログが表示された後にアプリが終了します。
+
+### 起動時のランタイム動作
+- `SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED)` を呼び出し、制御中・データ保存中に OS がスリープしたり画面がオフになるのを抑止します。
+- `SetPriorityClass(REALTIME_PRIORITY_CLASS)` でプロセス優先度を Realtime に設定し、計測・制御ループの遅延を抑えます。
+- `MainFrm::PreCreateWindow` において、ウィンドウサイズを画面の `SM_CXSCREEN` / `SM_CYSCREEN` に合わせ、`WS_THICKFRAME` を外すため、ウィンドウのリサイズはできません。
+- ウィンドウのタイトルは `DigitShowModbus v<バージョン> [<コミットハッシュ短縮>] (debug|release) (dirty)` の形式で表示されます（`dirty` は Git の作業ツリーが dirty の場合のみ付加されます）。
 
 ## VisualStudio 2026 環境構築
 Visual Studio 2026 でのビルド方法を記載しています。2025年移行のバージョンについては、Googleで情報を検索し、逐次正しいビルド依存関係を選択してください。
@@ -239,9 +269,9 @@ Gitを使用していな場合、コードの変更点がわからなくなっ�
 多くの人が修正を加えたいのは、`CDigitShowModbusDoc::ControlMain`での処理になると思います。
 以下にIISモーターモードでの処理の例を示します。
 
-IDが1（CONTROL_TYPE_PRECONSOLIDATION）の場合は、`Control_PreConsolidation`を呼び出します。これは見ての通り、"Control from File"からではない先行圧密用の関数です。
+IDが1（CONTROL_TYPE_PRECONSOLIDATION）の場合は、`Control_PreConsolidation`を呼び出します。これは見ての通り、"Step Control"からではない先行圧密用の関数です。
 
-IDが15（CONTROL_TYPE_STEP）の場合は、`Control_FileCtrl_xxxxx`関数群を呼び出します。これがメイン機能の "Control from File"で実行されるプログラム群です。
+IDが15（CONTROL_TYPE_STEP）の場合は、`Control_FileCtrl_xxxxx`関数群を呼び出します。これがメイン機能の "Step Control"で実行されるプログラム群です。
 
 本当に動いているか不安な場合は"Release"ビルドでもログの出る`spdlog::info`をどんどん追加して、ログを出力してください。
 
@@ -554,23 +584,27 @@ Webサーバー機能をONにすると、実行バイナリと同一ディレク
 多くのブラウザでは、`index.html` を自動的に読み込むため、`www/index.html` を作成しておくと、ブラウザでアクセスした際に自動的に表示されます。
 これらの機能を正しく使うにはネットワークの知識が必要です。IPアドレスとはなにか、同一プライベートネットワークとはなにか、サブネットとは何かが分からない人は、まずは基礎的なネットワークの知識を学んでください。
 
-DigitShowModbusでは、zipを利用した圧縮を透過的（自動）で行うため、よほどの理由がない限りは、開発者は圧縮済みのコンテンツ（gz、zipなど）を作成する必要はありません。
+DigitShowModbusでは、`Accept-Encoding: gzip`を要求するクライアントに対して、**事前圧縮済みの`.gz`ファイル**を透過的に配信します。圧縮は自動で行われないため、開発者自身が圧縮済みのコンテンツ（`.gz`ファイル）を作成・配置する必要があります（オンザフライの圧縮は行いません）。
 また、Modbusボードの計測データを取得したり、チャート画像を取得したり、制御コマンドを送信したりするためのWebAPIを用意しています。
 これらを組み合わせると、独自のHTMLやCSS、JavaScriptを使用して、リモート監視・可視化用のWebアプリケーションを作成することができます。
 これらのAPIはCORS（Cross-Origin Resource Sharing）に対応しているため、同一オリジンポリシーに縛られず、他のドメインからもアクセス可能です。
+
+Webサーバーがバインドするホストとポートの既定値は `localhost:8080` です。`--listen=` を省略した場合も localhost の 8080 番ポートで待ち受けます。
 
 基本となるWebUIとして、`https://github.com/mkt-kuno/DigitShowWebview/`にて、
 DigitShowModbusのWebAPIを使用したリモート監視・可視化用のWebアプリケーションのサンプルを公開しています。
 Bun+React+TypeScriptで作成されており、高速に動作しますが、AIに書かせたコードも多く、安定した動作は保証できません。
 複雑な表示や、高機能なダッシュボードを作成したい人は、自身でコーディングしてください。
 
+Webサーバー機能を完全に無効化したい場合は、`--listen=` のポート部分が `std::stoi` で解釈できない値（例: `--listen="localhost:disabled"` や `--listen="localhost:abc"` など）に設定してください。`std::stoi` が例外を投げた場合、内部の `port` が `-1` のままとなり、HTTPサーバーは起動しません。
+
 ### 正常性確認API（v1）
-`/v1/health/` に GET リクエストを送ると、サーバーの正常性を確認できます。
+`/v1/health` に GET リクエストを送ると、サーバーの正常性を確認できます。
 状態とタイムスタンプのみがJSON形式で返されます。
 
 ### 計測データの取得API（v1）
 `/v1/` に GET リクエストを送ると、現在の最新計測データを取得できます。
-`localhost:80` 運用時であれば `http://localhost/v1/` でアクセスできます。
+`localhost:8080` 運用時であれば `http://localhost:8080/v1/` でアクセスできます。
 計測データはJSON形式で返されます。
 以下は、計測データの例です。
 
@@ -579,11 +613,13 @@ Bun+React+TypeScriptで作成されており、高速に動作しますが、AI�
 ```json
 {
   "control": {
-    "cycle_state": 0,
+    "cyclic": {
+      "num": 0,
+      "state": 0
+    },
     "mode": 0,
-    "num_cyclic": 0,
     "stepctrl": {
-      "args": { "00": 0.0, "01": 0.0, "02": 0.0, "03": 0.0, "04": 0.0 },
+      "args": { "00": 0.0, "01": 0.0, "02": 0.0, "03": 0.0, "04": 0.0, "05": 0.0, "06": 0.0, "07": 0.0, "08": 0.0, "09": 0.0, "10": 0.0, "11": 0.0, "12": 0.0, "13": 0.0, "14": 0.0, "15": 0.0 },
       "ctrl": 0,
       "current_step": 0
     },
@@ -602,17 +638,19 @@ Bun+React+TypeScriptで作成されており、高速に動作しますが、AI�
       "area": 1963.29541015625,
       "diameter": 49.99745178222656,
       "height": 100.0,
+      "ldt_1": 0.0,
+      "ldt_2": 0.0,
       "volume": 196329.546875
     }
   },
-  "flag": { "control": false, "cyclic": false, "save_data": false, "set_board": true },
-  "out": { "00": { "label": "00:Motor ON/OFF", "value": 0.0 }, "01": {"label": "01:Motor UP/DWN", "value": 0.0 } },
+  "flag": { "control": false, "save_data": false, "set_board": true },
+  "out": { "00": { "label": "00:Motor ON/OFF", "value": 0.0 }, "01": {"label": "01:Motor UP/DOWN", "value": 0.0 } },
   "par": { "00": { "label": "00:q(kPa)", "value": 5.225908279418945 }, "01": { "label": "01:p'(kPa)", "value": 1.7425289154052734 } },
   "phy": { "00": { "label": "00:Load(N)", "value": 10.260002136230469}, "01": { "label": "01:ExtDisp(mm)", "value": 0.0 } },
   "raw": { "00": { "label": "00:LoadCell(i16)", "value": 42.0 }, "01": { "label": "01:LVDT(i16)", "value": -3.0 } },
   "system": { "color": "#002020" },
   "time": {
-    "ctrl_delta_sec": 0.0,
+    "ctrl_interval_sec": 0.0,
     "ctrl_step_elapsed_sec": 0.0,
     "interval_ms_ctrl": 200,
     "interval_ms_disp": 100,
@@ -622,14 +660,33 @@ Bun+React+TypeScriptで作成されており、高速に動作しますが、AI�
 }
 ```
 
+`system.color` の値は内部状態によって次のように変化します。
+
+- `#002020` ： Motor モードかつ git が clean（既定）
+- `#000030` ： Torsional モード
+- `#300000` ： git が dirty、またはフォークされたリポジトリ上でのビルド
+
+さらに、`flag.cyclic` は実際にはJSONに含まれません（旧バージョンの名残です）。現状のキーは `control.cyclic.state` と `control.cyclic.num` です。
+
+`current.specimen.ldt_1` / `current.specimen.ldt_2` は LVDT 計測値（変位計の値）を含む追加フィールドです。
+
 ### プレビュー用データ配列の取得API（v1）
-プレビュー用データ配列は、計測データを最大点数（デフォルト：512）で保存されたものを取得できます。
+プレビュー用データ配列は、計測データを保存されたものから取得できます。保存モードが Not Saving の場合は最大512点、DataSaving モードの場合は最大8192点（Folding 後は実効的に 4096 点以下）が上限となります。
 必要なデータを引数としてURLエンコードしてGETリクエストを送信します。
-`/v1/preview/` に GET リクエストを送ると、プレビュー用データ配列を取得できます。
-`localhost:80` 運用時であれば `http://localhost/v1/preview/` でアクセスできます。
+`/v1/preview` に GET リクエストを送ると、プレビュー用データ配列を取得できます。
+`localhost:8080` 運用時であれば `http://localhost:8080/v1/preview` でアクセスできます。
 計測データはJSON形式で返されます。
 例えば`time`と`phy_00`を取得したい場合、
-`http://localhost/v1/preview?time&phy_00` のように指定します。
+`http://localhost:8080/v1/preview?time&phy_00` のように指定します。
+
+利用可能なクエリパラメータは以下の通りです。
+
+- `time` ： 時刻配列（`elapsed_sec`）を含める
+- `timestamp` ： 壁時計時刻配列（Unix Epoch 秒）を含める（`timestamp.label`=`"Epoch[s]"` および `timestamp.data` として返る）
+- `raw_XX` ： AI Raw ch XX を含める（XX: 00-15）
+- `phy_XX` ： AI Phy ch XX を含める（XX: 00-15）
+- `par_XX` ： Param ch XX を含める（XX: 00-31）
+- `out_XX` ： AO Raw ch XX を含める（XX: 00-07）
 
 以下は、プレビュー用データ配列の例です。
 

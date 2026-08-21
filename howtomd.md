@@ -138,7 +138,7 @@ GitHub Markdown には図表の自動番号機能がないため、手動でリ�
 [コントロールについて](#コントロールについて)を参照してください。
 
 （本文中の図への参照）
-[Pre-Consolidation](#pre-consolidation)節の図を参照。
+[PreConsolidation](#preconsolidation)節の図を参照。
 ```
 
 ## ファイル構成

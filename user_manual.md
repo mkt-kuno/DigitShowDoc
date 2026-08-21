@@ -22,7 +22,14 @@ DigitShowModbusは、以下の2つの動作モードを持ちます。
 
 ねじり試験モードは未完成のため、現在は三軸圧縮試験モードのみが使用可能です。以下では、三軸圧縮試験モードについて説明します。
 
-通常、DigitShowModbusの背景色は深緑色です。背景色が暗い赤色の場合、オリジナル版ではないことを示します。
+通常、DigitShowModbusの背景色は動作モードによって異なります：
+- Motor 動作モード（既定）：深緑色（`#002020`）
+- Torsional 動作モード（`--mode=torsional`）：濃紺（`#000030`）
+
+背景色が暗い赤色（`#300000`）の場合、以下のいずれかに該当し、オリジナル版ではないことを示します：
+- Git の作業ツリーが dirty である（未コミットの変更がある）
+- リモートリポジトリの URL が `mkt-kuno/DigitShowModbus` を含まない（フォークである）
+
 オリジナル版以外は誰かの手によって改変されたものであり、メンテナンス、サポート対象ではありません。
 本マニュアルはオリジナル版を対象としたものであり、オリジナル版以外の動作については、サポートできません。
 
@@ -95,6 +102,7 @@ Debugビルドで試用して、安全性を確認してから長期運用して
 
 完全表記が`--listen=`、短縮表記が`-l=`です。
 地下実験室にいなくても、同一ネットワーク内であれば、研究室のパソコンからモニタリングが可能になります。
+ホストとポートの既定値は `localhost:8080` です。`--listen=` を省略した場合も localhost の 8080 番ポートで待ち受けます。
 同一PCでたくさんチャートを見たいだけなら`--listen="localhost:80"`を、
 実験室の他のパソコンからも見たいなら`--listen="0.0.0.0:80"`を設定してください。
 `https://github.com/mkt-kuno/DigitShowWebview/`のRelease版をダウンロードして、
@@ -286,14 +294,14 @@ $$
 
 *図: メイン画面。*
 
-1. メイン画面の左上にあるタブから、キャリブレーションや供試体の情報、コントロール設定などに関する各ウィンドウ（次項以降で詳述）を開くことができます。
+1. メイン画面の左上にあるメニューから、キャリブレーションや供試体の情報、コントロール設定などに関する各ウィンドウ（次項以降で詳述）を開くことができます。
 2. Raw Valueでは、センサーからAD変換されたデジタル信号の生データを表示します。最小値は-32768、最大値は32767のint16型の値が表示されます。
 3. Physical Valueでは、Raw Valueをキャリブレーション値を用いて物理量($`\mathrm{N}`$や$`\mathrm{mm}`$など)に変換した値を表示します。
 4. Parametersでは、応力ひずみや、供試体の現在の寸法、レファレンス寸法などが表示されます。これらの値は、Physical Valueや供試体寸法の情報をもとに計算された値です。
 5. Voltage Outでは、[出力チャンネル構成](#出力チャンネル構成)節に示すアナログ電圧出力値の情報が表示されます。
 6. Plotでは、Raw ValueやPhysical Value、Parametersの値の変化をグラフで表示します。データ保存中は最大512点まで表示されます。保存していないときは、最新60秒のデータが表示されます。
 7. System Log & Control Info では、システム全体のエラーや警告ログ、現状のControl情報や、次のステップの情報などを閲覧できます。
-8. Current Settings & Basic Settingsでは、Control Typeや、Samplingレートの設定や、制御とサンプリングの開始・停止を行うことができます。なお、Control TypeやSamplingレートの設定は、Setボタンを押すことで反映されます。
+8. Current Settings & Basic Settingsでは、Control Typeや、Samplingレートの設定や、制御とサンプリングの開始・停止を行うことができます。なお、Control TypeやSamplingレートの設定は、Applyボタンを押すことで反映されます。
 
 ### DA Output - Voltage Output
 
@@ -301,36 +309,36 @@ $$
 EPを三軸セルに接続する前に、EPの出力圧力を調整する際に使用します。
 また、装置を組み上げたり接続し直した場合に、クラッチやモータなどの動作確認などにも使用されます。
 
-![DA Output - Voltage Outputウィンドウ。](img/DSM_VoltOut.png)
+![Voltage Output on DA Boardウィンドウ。](img/DSM_VoltOut.png)
 
-*図: DA Output - Voltage Outputウィンドウ。*
+*図: Voltage Output on DA Boardウィンドウ。*
 
-### Specimen - Config
+### Specimen Data
 
 供試体の初期寸法を設定するウインドウです。供試体の直径と高さ・LDTの長さなどを入力します。
 
-![Specimen - Configウィンドウ。](img/DSM_specimen.png)
+![Specimen Dataウィンドウ。](img/DSM_specimen.png)
 
-*図: Specimen - Configウィンドウ。*
+*図: Specimen Dataウィンドウ。*
 
 TBD...
 
-### Control - Pre-Consolidation
+### Control - PreConsolidation
 
-Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体の飽和過程で使用します。
+PreConsolidationは先行圧密用の制御コマンドです。主に供試体の飽和過程で使用します。
 制御の詳細については、[コントロールについて](#コントロールについて)を参照してください。
 
-![Control - Pre-Consolidationウィンドウ。](img/DSM_PreCons.png)
+![Control - PreConsolidationウィンドウ。](img/DSM_PreCons.png)
 
-*図: Control - Pre-Consolidationウィンドウ。*
+*図: Control - PreConsolidationウィンドウ。*
 
-### Control - Control from file
+### Control - Step Control
 
 複数のコントロールを順序立てて自動的に行うための設定を行うウインドウです。圧密・クリープ・モーター速度・圧縮方向などの設定を入力します。
 
-![Control - Control from fileウィンドウ。](img/DSM_ctrl_file_add_inst.png)
+![Control - Step Controlウィンドウ。](img/DSM_ctrl_file_add_inst.png)
 
-*図: Control - Control from fileウィンドウ。*
+*図: Control - Step Controlウィンドウ。*
 
 1. 現在のControlのStep No.が表示されます。チェックボックスを選択した上で、矢印ボタンをクリックするとStep No.のインクリメント・デクリメントができます。なお、設定可能なStep No.は0から1023までです。
 2. 各StepのControl No.の設定およびそのパラメータの設定を行うことができます。Loadボタンをクリックすると、現在入力中のStep No.の、DigitShowModbusに設定されているControl No.とパラメータが表示されます。Updateボタンをクリックすると、現在入力されているStep No.のControl No.とパラメータが、DigitShowModbus内に登録されます。
@@ -343,7 +351,7 @@ Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体
 
 ソフトウェアのバージョン情報を表示するウインドウです。
 
-![Other - Versionウィンドウ。](img/DSM_Version.png)
+![Other - Version](img/DSM_Version.png)
 
 *図: Other - Versionウィンドウ。*
 
@@ -356,33 +364,33 @@ Pre-Consolidationは先行圧密用の制御コマンドです。主に供試体
 
 *図: Other - Environmental Variablesウィンドウ。*
 
-### Other - Open Log Folder
+### Other - Open Appdata/Log Folder
 
 ソフトウェアのログを表示するウインドウです。エラーが発生した場合などに参照します。
 
-### Other - Open Config Folder
+### Other - Open Temporary Folder
 
 ソフトウェアのが自動で生成する設定ファイルを表示するウインドウです。
 
 ## コントロールについて
 
 ここでは、DigitShowModbusの各コントロール機能について説明します。
-大きく分けて、供試体の飽和過程で使用するPre-Consolidation (Control ID:1)と、圧密や軸圧縮時に使用するControl from file (Control ID:15)の2つに分かれます。
+大きく分けて、供試体の飽和過程で使用するPreConsolidation (Control ID:1)と、圧密や軸圧縮時に使用するStep Control (Control ID:15)の2つに分かれます。
 
-### Pre-Consolidation
+### PreConsolidation
 
-Pre-Consolidationは、供試体の飽和過程で使用するコントロールです。
-[以下の図](#pre-consolidation)に示すように、設定した軸差応力を保つように載荷軸を上下させます。
+PreConsolidationは、供試体の飽和過程で使用するコントロールです。
+[以下の図](#preconsolidation)に示すように、設定した軸差応力を保つように載荷軸を上下させます。
 デフォルトの設定では、$`q=0\,\mathrm{kPa}`$なので、等方状態を保とうとします。
 
 軸差応力が目標値から離れれば離れるほど、高速でモーターを回転させて載荷軸を上下させます（いわゆるP制御のようなもの）。
 ただし、クラッチの消耗を防ぐため、軸差応力が$`0.5\,\mathrm{kPa}`$以下しか離れていないのであれば、載荷軸は動かないようにプログラムされています（この閾値はユーザーからは設定できません）。
 
-![Pre-Consolidationの動作のイメージ](img/precon_q_rpm.png)
+![PreConsolidationの動作のイメージ](img/precon_q_rpm.png)
 
-*図: Pre-Consolidationの動作のイメージ*
+*図: PreConsolidationの動作のイメージ*
 
-### Control from file - 0: Stop
+### Step Control - 0: Stop
 
 Control No.0: Stopは、引数で指定しない限り、基本的に何の制御も行いません。
 モーターのクラッチはONのまま、モーターは回転しません（載荷軸は全く動きません）。
@@ -399,7 +407,7 @@ v4.6.xまでは「No control」でしたが、v4.7.0からは「Stop」に名称
 - Args[03]: EP Cell Pressure設定。0は何もしない、1はEPの出力電圧を0[V]
 - Args[04]: EP Axial Pressure設定。0は何もしない、1はEPの出力電圧を0[V]
 
-### Control from file - 1: Monotonic Axial Loading
+### Step Control - 1: Monotonic Axial Loading
 
 Control No.1: Monotonic Axial Loadingは、単調軸圧縮・軸伸長を行うコントロールです。
 
@@ -416,7 +424,7 @@ Control No.1: Monotonic Axial Loadingは、単調軸圧縮・軸伸長を行う�
 なお、Args[03]とArgs[05]のリミッターは少なくとも1つは設定する必要があります。両方とも設定しない場合、載荷が行われません。
 また、非排水三軸圧縮試験の場合には、Args[04]にロードセルの定格容量を設定することをお勧めします（応力経路で限界状態線上に達したのちに軸差応力が増加し続ける場合があるためです）。
 
-### Control from file - 2: Cyclic Axial Loading Between Specified STRESS Limits
+### Step Control - 2: Cyclic Axial Loading Between Specified STRESS Limits
 
 Control No.2: Cyclic Axial Loading Between Specified STRESS Limitsは、指定した応力範囲での繰り返し軸載荷を行うコントロールです。
 
@@ -429,7 +437,7 @@ Control No.2: Cyclic Axial Loading Between Specified STRESS Limitsは、指定�
 - Args[04]: 何サイクル載荷を行うか。所定のサイクル数の載荷を終えた場合、次のStep No.に進みます。
 - Args[05]: 半径方向の有効応力。単位はkPa。正の値が入力されたときのみ、EPでセル圧を制御することで、円周方向の有効応力を設定された値に保ちます（0以下の値が入力された場合、EPの出力圧力は変化しません）。逆に、非排水三軸試験を行う場合には、必ず0を入力してください。
 
-### Control from file - 3: Cyclic Axial Loading Between Specified STRAIN Limits
+### Step Control - 3: Cyclic Axial Loading Between Specified STRAIN Limits
 
 Control No.3: Cyclic Axial Loading Between Specified STRAIN Limitsは、指定した軸ひずみの範囲での繰り返し軸載荷を行うコントロールです。以下のパラメータが設定できます。
 
@@ -440,7 +448,7 @@ Control No.3: Cyclic Axial Loading Between Specified STRAIN Limitsは、指定�
 - Args[04]: 何サイクル載荷を行うか。所定のサイクル数の載荷を終えた場合、次のStep No.に進みます。
 - Args[05]: 半径方向の有効応力。単位はkPa。正の値が入力されたときのみ、EPでセル圧を制御することで、円周方向の有効応力を設定された値に保ちます（0以下の値が入力された場合、EPの出力圧力は変化しません）。逆に、非排水三軸試験を行う場合には、必ず0を入力してください。
 
-### Control from file - 4: Creep
+### Step Control - 4: Creep
 
 Control No.4: Creepは、クリープを行うコントロールです。
 主に、Control No.5: Linear Stress Path Loadingを用いて圧密した後に、二次圧密を完了させるために使用されます。
@@ -456,9 +464,9 @@ Control No.4: Creepは、クリープを行うコントロールです。
 実際の運用では、Args[03]には、十分長い時間を設定しておくことが多いです。これは、圧密→クリープ（二次圧密）の後、軸圧縮に進む前に、供試体のレファレンス値の更新とひずみの初期化の操作を手動で行う必要があるため、勝手に次のStep No.に進まないようにするためです。
 
 また、Args[01]とArgs[02]は比例制御に関連するパラメータです。
-軸差応力のエラー値（目標値と現在の値の差）とモーターの回転方向・速度の関係については、[Pre-Consolidation](#pre-consolidation)を参照してください。
+軸差応力のエラー値（目標値と現在の値の差）とモーターの回転方向・速度の関係については、[PreConsolidation](#preconsolidation)を参照してください。
 
-### Control from file - 5: Linear Stress Path Loading
+### Step Control - 5: Linear Stress Path Loading
 
 Control No.5: Linear Stress Path Loadingは、指定した応力経路に沿った載荷を行う始点となる応力状態と、終点となる応力状態を指定することで、応力経路上でその2点を結ぶ直線に沿った載荷を行うコントロールです。
 一般に圧密時に使用されます。
@@ -474,4 +482,4 @@ Control No.5: Linear Stress Path Loadingは、指定した応力経路に沿っ�
 - Args[06]: モーターの最大回転速度。単位はRPM。
 
 なお、Args[05]とArgs[06]は比例制御に関連するパラメータです。
-有効応力のエラー値（現在の目標値と現在の実際の値の差）とモーターの回転方向・速度の関係については、[Pre-Consolidation](#pre-consolidation)を参照してください。
+有効応力のエラー値（現在の目標値と現在の実際の値の差）とモーターの回転方向・速度の関係については、[PreConsolidation](#preconsolidation)を参照してください。
