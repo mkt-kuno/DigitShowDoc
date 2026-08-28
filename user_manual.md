@@ -21,15 +21,6 @@ DigitShowModbusは、以下の2つの動作モードを持ちます。
 - **生研式ねじり試験動作モード**: 生研式の中空ねじりせん断試験装置を用いて、飽和供試体の中空ねじりせん断試験を行うためのモードです。まだ開発中です。
 
 ねじり試験モードは未完成のため、現在は三軸圧縮試験モードのみが使用可能です。以下では、三軸圧縮試験モードについて説明します。
-
-通常、DigitShowModbusの背景色は動作モードによって異なります：
-- Motor 動作モード（既定）：深緑色（`#002020`）
-- Torsional 動作モード（`--mode=torsional`）：濃紺（`#000030`）
-
-背景色が暗い赤色（`#300000`）の場合、以下のいずれかに該当し、オリジナル版ではないことを示します：
-- Git の作業ツリーが dirty である（未コミットの変更がある）
-- リモートリポジトリの URL が `mkt-kuno/DigitShowModbus` を含まない（フォークである）
-
 オリジナル版以外は誰かの手によって改変されたものであり、メンテナンス、サポート対象ではありません。
 本マニュアルはオリジナル版を対象としたものであり、オリジナル版以外の動作については、サポートできません。
 
@@ -96,29 +87,6 @@ Debugビルドで試用して、安全性を確認してから長期運用して
 #define DSM_AO_DEF_VLT_MOTOR_OFF (0.0f)			// Voltage of Axial Motor OFF
 #define DSM_AO_DEF_VLT_MOTOR_UP (5.0f)			// Voltage of Axial Motor UP
 #define DSM_AO_DEF_VLT_MOTOR_DOWN (0.0f)		// Voltage of Axial Motor DOWN
-```
-
-### Webサーバー機能
-
-完全表記が`--listen=`、短縮表記が`-l=`です。
-地下実験室にいなくても、同一ネットワーク内であれば、研究室のパソコンからモニタリングが可能になります。
-ホストとポートの既定値は `localhost:8080` です。`--listen=` を省略した場合も localhost の 8080 番ポートで待ち受けます。
-同一PCでたくさんチャートを見たいだけなら`--listen="localhost:80"`を、
-実験室の他のパソコンからも見たいなら`--listen="0.0.0.0:80"`を設定してください。
-`https://github.com/mkt-kuno/DigitShowWebview/`のRelease版をダウンロードして、
-実行中の`DigitShowModbus.exe`と同じフォルダに置くと、簡単にリモートモニタリングが可能です。
-複雑な表示がしたい人は自分でコーディングしてください。
-フォルダ構成は以下のようになります。
-
-**Webサーバー機能有効時のフォルダ構成例**
-
-```
-DigitShowModbus.exe
-modbus-5.dll
-www/
-├── index.html
-├── ~~~~~.css
-└── ~~~~~.js
 ```
 
 ## センサーと入力チャンネル構成
@@ -363,6 +331,14 @@ PreConsolidationは先行圧密用の制御コマンドです。主に供試体�
 ![Other - Environmental Variablesウィンドウ。](img/DSM_envval.png)
 
 *図: Other - Environmental Variablesウィンドウ。*
+
+### Other - Web API
+
+内蔵 Web API サービスの動作設定およびエンドポイント情報を確認・変更するウインドウです。
+遠隔監視用ビューワー（**DigitShowWebview**）や外部の Python スクリプト等からリアルタイムで計測値を取得する際に利用します。
+遠隔監視を行う場合は、監視用 PC で `DigitShowWebview.exe` を起動し、接続先設定画面にて本機の IP アドレスとポート番号を指定します。
+
+本ウインドウでは Listening アドレス（`0.0.0.0` または `127.0.0.1`）やポート番号の変更、「Restart Web API」による即時再起動が可能です。変更した設定は次回起動時にも自動的に復元されます。
 
 ### Other - Open Appdata/Log Folder
 
