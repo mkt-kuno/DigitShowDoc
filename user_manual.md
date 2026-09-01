@@ -24,10 +24,6 @@ DigitShowModbusは、以下の2つの動作モードを持ちます。
 オリジナル版以外は誰かの手によって改変されたものであり、メンテナンス、サポート対象ではありません。
 本マニュアルはオリジナル版を対象としたものであり、オリジナル版以外の動作については、サポートできません。
 
-![オリジナル版（左）と非オリジナル版（右）の背景色の違い](img/DSM_main_dirty.png)
-
-*図: オリジナル版（左）と非オリジナル版（右）の背景色の違い*
-
 ## 起動時変数の設定（ユーザー向け）
 
 ここでは、Windowsのショートカットのプロパティを利用した起動時変数の設定について、特に一般ユーザー向けのものに絞って説明します。
@@ -267,7 +263,7 @@ $$
 3. Physical Valueでは、Raw Valueをキャリブレーション値を用いて物理量($`\mathrm{N}`$や$`\mathrm{mm}`$など)に変換した値を表示します。
 4. Parametersでは、応力ひずみや、供試体の現在の寸法、レファレンス寸法などが表示されます。これらの値は、Physical Valueや供試体寸法の情報をもとに計算された値です。
 5. Voltage Outでは、[出力チャンネル構成](#出力チャンネル構成)節に示すアナログ電圧出力値の情報が表示されます。
-6. Plotでは、Raw ValueやPhysical Value、Parametersの値の変化をグラフで表示します。データ保存中は最大512点まで表示されます。保存していないときは、最新60秒のデータが表示されます。
+6. Plotでは、Raw ValueやPhysical Value、Parametersの値の変化をグラフで表示します。データ保存中は最大4000点程度が表示されます。保存していないときは、最新60秒のデータが表示されます。
 7. System Log & Control Info では、システム全体のエラーや警告ログ、現状のControl情報や、次のステップの情報などを閲覧できます。
 8. Current Settings & Basic Settingsでは、Control Typeや、Samplingレートの設定や、制御とサンプリングの開始・停止を行うことができます。なお、Control TypeやSamplingレートの設定は、Applyボタンを押すことで反映されます。
 
@@ -277,7 +273,7 @@ $$
 EPを三軸セルに接続する前に、EPの出力圧力を調整する際に使用します。
 また、装置を組み上げたり接続し直した場合に、クラッチやモータなどの動作確認などにも使用されます。
 
-![Voltage Output on DA Boardウィンドウ。](img/DSM_VoltOut.png)
+![Voltage Output on DA Boardウィンドウ。](img/DSM_vltout.png)
 
 *図: Voltage Output on DA Boardウィンドウ。*
 
@@ -296,7 +292,7 @@ TBD...
 PreConsolidationは先行圧密用の制御コマンドです。主に供試体の飽和過程で使用します。
 制御の詳細については、[コントロールについて](#コントロールについて)を参照してください。
 
-![Control - PreConsolidationウィンドウ。](img/DSM_PreCons.png)
+![Control - PreConsolidationウィンドウ。](img/DSM_precon.png)
 
 *図: Control - PreConsolidationウィンドウ。*
 
@@ -304,14 +300,13 @@ PreConsolidationは先行圧密用の制御コマンドです。主に供試体�
 
 複数のコントロールを順序立てて自動的に行うための設定を行うウインドウです。圧密・クリープ・モーター速度・圧縮方向などの設定を入力します。
 
-![Control - Step Controlウィンドウ。](img/DSM_ctrl_file_add_inst.png)
+![Control - Step Controlウィンドウ。](img/DSM_stepctrl_add_inst.png)
 
 *図: Control - Step Controlウィンドウ。*
 
 1. 現在のControlのStep No.が表示されます。チェックボックスを選択した上で、矢印ボタンをクリックするとStep No.のインクリメント・デクリメントができます。なお、設定可能なStep No.は0から1023までです。
-2. 各StepのControl No.の設定およびそのパラメータの設定を行うことができます。Loadボタンをクリックすると、現在入力中のStep No.の、DigitShowModbusに設定されているControl No.とパラメータが表示されます。Updateボタンをクリックすると、現在入力されているStep No.のControl No.とパラメータが、DigitShowModbus内に登録されます。
-3. 各Control No.の詳細が記述されています。なお、Control No.の詳細は、[コントロールについて](#コントロールについて)を参照してください。
-4. Read from fileボタンをクリックすると、指定したファイルからStep No., Control No.とパラメータを読み込むことができます。Save to fileボタンをクリックすると、現在設定されているStep No., Control No.とパラメータの情報を、指定したファイルに保存することができます。Closeボタンを押すと、ウインドウが閉じます。
+2. 各StepのControl No.の設定およびそのパラメータの設定を行うことができます。Loadボタンをクリックすると、現在入力中のStep No.の、DigitShowModbusに設定されているControl No.とパラメータが表示されます。Updateボタンをクリックすると、現在入力されているStep No.のControl No.とパラメータが、DigitShowModbus内に登録されます。  各Control No.の詳細が記述されています。なお、Control No.の詳細は、[コントロールについて](#コントロールについて)を参照してください。
+3. Import ボタンをクリックすると、指定したファイルからStep No., Control No.とパラメータを読み込むことができます。Exportボタンをクリックすると、現在設定されているStep No., Control No.とパラメータの情報を、指定したファイルに保存することができます。Closeボタンを押すと、ウインドウが閉じます。
 
 制御の詳細については、[コントロールについて](#コントロールについて)を参照してください。
 

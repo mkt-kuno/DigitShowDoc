@@ -36,6 +36,7 @@ int16_t で通信されるデータに、小数点以下の値を拡張する形
 | ---: | :--- | ---: | ---: | ---: | ---: |
 | Trio（v1） | 16 | 6 | False | False | |
 | Quartet（v2） | 16 | 8 | False | False | |
+| Quartet（v2.5） | 16 | 8 | True | True | |
 | Yamanin（v3） | 16 | 8 | True | True | |
 | Milia（v4） | 16 | 8 | True | True | |
 | Modulo（v5） | 16 | 8 | True | False | |
@@ -50,7 +51,11 @@ int16_t で通信されるデータに、小数点以下の値を拡張する形
 
 *図: Quartet（v2）ボード*
 
-ボードは緑で、上部DA出力コネクタが4個（8ch）なのが特徴です。
+![Quartet（v2.5）ボード](img/dev/quartet_v2p5.png)
+
+*図: Quartet（v2.5）ボード*
+
+ボードは白で、全てのコネクタが着脱式なのが特徴です。
 
 ![Yamanin（v3）ボード](img/dev/yamanin.png)
 
@@ -571,13 +576,18 @@ DigitShowModbus の Web API を使用した公式の遠隔監視・可視化ア�
 Web API の Listening ホストおよびポートの既定値は `0.0.0.0:8080`（全ネットワークインターフェース・ポート 8080）です。
 
 - **GUI からの変更**: メニューの「Other」→「Web API」を選択すると、Listening アドレス（`0.0.0.0` / `127.0.0.1` 等）およびポート番号を対話的に設定・変更でき、「Restart Web API」で即時再起動できます。設定値はアプリケーション終了時に `config.json` に保存され、次回起動時にも自動復元されます。
+
+![Web API 設定ダイアログ](img/DSM_webapi.png)
+
+*図: Web API 設定ダイアログ*
+
 - **起動時引数での指定**: コマンドライン引数 `--listen="0.0.0.0:8080"` のように指定して起動することも可能です。
 
-### ハートビート / 正常性確認API（v1）
-`/v1/heartbeat`（互換用: `/v1/health`）に GET リクエストを送ると、サーバーの稼働状態とタイムスタンプを取得できます。
+### ハートビート / 正常性確認API（v2）
+`/v2/heartbeat`に GET リクエストを送ると、サーバーの稼働状態とタイムスタンプを取得できます。
 
 ```bash
-curl http://localhost:8080/v1/heartbeat
+curl http://localhost:8080/v2/heartbeat
 ```
 
 **レスポンス例**:
@@ -588,11 +598,11 @@ curl http://localhost:8080/v1/heartbeat
 }
 ```
 
-### リアルタイム計測データの取得API（v1）
-`/v1/realtime`（互換用: `/v1/`）に GET リクエストを送ると、最新のセンサ計測値（Raw/Phy/Param/Out）および制御フラグを取得できます。
+### リアルタイム計測データの取得API（v2）
+`/v2/realtime`に GET リクエストを送ると、最新のセンサ計測値（Raw/Phy/Param/Out）および制御フラグを取得できます。
 
 ```bash
-curl http://localhost:8080/v1/realtime
+curl http://localhost:8080/v2/realtime
 ```
 
 以下は、計測データの例です。
@@ -601,72 +611,22 @@ curl http://localhost:8080/v1/realtime
 
 ```json
 {
-  "control": {
-    "cyclic": {
-      "num": 0,
-      "state": 0
-    },
-    "mode": 0,
-    "stepctrl": {
-      "args": { "00": 0.0, "01": 0.0, "02": 0.0, "03": 0.0, "04": 0.0, "05": 0.0, "06": 0.0, "07": 0.0, "08": 0.0, "09": 0.0, "10": 0.0, "11": 0.0, "12": 0.0, "13": 0.0, "14": 0.0, "15": 0.0 },
-      "ctrl": 0,
-      "current_step": 0
-    },
-    "type": 0
-  },
-  "current": {
-    "e_p": 1.7425289154052734,
-    "e_sa": 5.226467609405518,
-    "e_sr": 0.0005594491958618164,
-    "ea": 0.0,
-    "er": 0.0050961971282958984,
-    "ev": 0.010185915976762772,
-    "p": 0.0,
-    "q": 5.225908279418945,
-    "specimen": {
-      "area": 1963.29541015625,
-      "diameter": 49.99745178222656,
-      "height": 100.0,
-      "ldt_1": 0.0,
-      "ldt_2": 0.0,
-      "volume": 196329.546875
-    }
-  },
   "flag": { "control": false, "save_data": false, "set_board": true },
   "out": { "00": { "label": "00:Motor ON/OFF", "value": 0.0 }, "01": {"label": "01:Motor UP/DOWN", "value": 0.0 } },
   "par": { "00": { "label": "00:q(kPa)", "value": 5.225908279418945 }, "01": { "label": "01:p'(kPa)", "value": 1.7425289154052734 } },
   "phy": { "00": { "label": "00:Load(N)", "value": 10.260002136230469}, "01": { "label": "01:ExtDisp(mm)", "value": 0.0 } },
   "raw": { "00": { "label": "00:LoadCell(i16)", "value": 42.0 }, "01": { "label": "01:LVDT(i16)", "value": -3.0 } },
-  "system": { "color": "#002020" },
-  "time": {
-    "ctrl_interval_sec": 0.0,
-    "ctrl_step_elapsed_sec": 0.0,
-    "interval_ms_ctrl": 200,
-    "interval_ms_disp": 100,
-    "interval_ms_save": 1000,
-    "save_elapsed_sec": 0.0
-  }
 }
 ```
 
-`system.color` の値は内部状態によって次のように変化します。
-
-- `#002020` ： Motor モードかつ git が clean（既定）
-- `#000030` ： Torsional モード
-- `#300000` ： git が dirty、またはフォークされたリポジトリ上でのビルド
-
-さらに、`flag.cyclic` は実際にはJSONに含まれません（旧バージョンの名残です）。現状のキーは `control.cyclic.state` と `control.cyclic.num` です。
-
-`current.specimen.ldt_1` / `current.specimen.ldt_2` は LVDT 計測値（変位計の値）を含む追加フィールドです。
-
-### プレビュー用データ配列の取得API（v1）
+### プレビュー用データ配列の取得API（v2）
 プレビュー用データ配列は、直近の計測データ時系列バッファから取得できます。バッファサイズは非保存時 512 点、データ保存時は最大 32,768 点（リングバッファ方式）となっており、長時間の連続試験でも安定してレスポンスが得られます。
 必要なデータ項目をクエリパラメータとして指定して GET リクエストを送信します。
-`/v1/preview` に GET リクエストを送ると、プレビュー用データ配列を取得できます。
-`http://localhost:8080/v1/preview` でアクセスできます。
+`/v2/preview` に GET リクエストを送ると、プレビュー用データ配列を取得できます。
+`http://localhost:8080/v2/preview` でアクセスできます。
 計測データはJSON形式で返されます。
 例えば `time` と `phy_00` を取得したい場合、
-`http://localhost:8080/v1/preview?time&phy_00` のように指定します。
+`http://localhost:8080/v2/preview?time&phy_00` のように指定します。
 
 利用可能なクエリパラメータは以下の通りです。
 
