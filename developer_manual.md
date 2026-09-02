@@ -5,7 +5,7 @@ DigitShowModbusのビルド方法や、専用のModbusRTUボードについて�
 
 ## 目次
 - [起動時変数](#起動時変数)
-- [VisualStudio 2026 環境構築](#visualstudio-2026-環境構築)
+- [ビルド環境構築](#ビルド環境構築)
 - [コントロールの追加・修正](#コントロールの追加修正)
 - [Modbusボードについて](#modbusボードについて)
 - [各ICの性能と説明](#各icの性能と説明)
@@ -140,101 +140,43 @@ Debugビルドで試用して、安全性を確認してから長期運用して
 - `MainFrm::PreCreateWindow` において、ウィンドウサイズを画面の `SM_CXSCREEN` / `SM_CYSCREEN` に合わせ、`WS_THICKFRAME` を外すため、ウィンドウのリサイズはできません。
 - ウィンドウのタイトルは `DigitShowModbus v<バージョン> [<コミットハッシュ短縮>] (debug|release) (dirty)` の形式で表示されます（`dirty` は Git の作業ツリーが dirty の場合のみ付加されます）。
 
-## VisualStudio 2026 環境構築
-Visual Studio 2026 でのビルド方法を記載しています。2025年移行のバージョンについては、Googleで情報を検索し、逐次正しいビルド依存関係を選択してください。
-
-### VisualStudio 2026のインストール
-MicrosoftからCommunity 2026 のインストーラを取得し実行します。無料版（Community）の最新版をネットから確実にダウンロードしてください。
-
-![Microsoft公式ホームページ](img/vs2022/installer.png)
-
-*図: Microsoft公式ホームページ*
-
-### 必要なコンポーネントのインストール
-まず、"ワークロード"から"C++によるデスクトップ開発"を選択する。
-ここでそのままインストールしないこと。"個別のコンポーネント"より、追加のパッケージのインストールが必須です。Linux向け`C++`や`C#`など似た表記が多いので注意すること。
-
-![ワークロード選択画面](img/vs2022/workload.png)
-
-*図: ワークロード選択画面*
-
-次に"個別のコンポーネント"より"Windows 11 SDK"の最新版を追加します。
-検索欄に"Windows 11 SDK"と入力すると探しやすくて良いでしょう。
-探した結果、すでに選択されている場合は、最新のものを2つ選択するようにしてください。
-
-![Windows 11 SDKの最新版の選択](img/vs2022/compo_win11sdk.png)
-
-*図: Windows 11 SDKの最新版の選択*
-
-次に最新のMFC用ビルドツールを追加します。
-検索欄に"C++ MFC"と入力すると探しやすくて良いでしょう。
-使用しているプラットフォームに合わせて（多くの場合"x86およびx64"）最新のC++ MFCビルドツールを選択してください。VisualStudio2022 であれば、 v143 になっているはずです。
-Snapdragonが乗ったSurface向けにクロスコンパイルしたい場合などは、ARM64/ARM64ECなど、環境に応じたツールもインストールしてください。
-基本的に"x86およびx64向け"を選択しておけば間違いないですが、まよったら画像のように全部入れてください。
-
-![プラットフォームの選択](img/vs2022/compo_latest_mfc.png)
-
-*図: プラットフォームの選択*
-
-最終的に、１～５個程度の追加パッケージが選択されているのを確認し、インストールを開始します。
-
-![追加のコンポーネント一覧](img/vs2022/compo_result.png)
-
-*図: 追加のコンポーネント一覧*
+## ビルド環境構築
+ビルド環境の構築は、ソースコードと同じフォルダにMarkdown形式のドキュメントが有るので、それを参照します。  
+Visual Studio Code(以下:VSCode)前提の作りになっています。  
+Clone してきたソースコードのフォルダを開くことで開発を開始してください。
 
 ### ソースコードの取得
 取得にはGitが必須です。最低限学習して、コミット、という単語の意味が分かるようにしてください。
-また、submoduleも使用しているため、Gitコマンドラインでの取得を推奨します。
-一発で行う場合は以下のように実行してください。
-
-`git clone --recurse-submodules https://github.com/mkt-kuno/DigitShowModbus.git`
-
-分割する場合や、更新があった場合などは
 
 `git clone https://github.com/mkt-kuno/DigitShowModbus.git`
 
-`git submodule update --init --recursive`
-
 のように、分割して必要なコマンドを実行してください。詳しくはGitのドキュメントを参照してください。
 
-### ソリューションのオープン
-VisualStudioのインストールが完了したら、ソリューションファイルを開きます。いくつか方法がありますが、最も簡単なのはVisualStudioを起動した後に"プロジェクトやソリューションを開く"を選択し、"DigitShowModbus.sln"を選択することです。
+### 環境の構築(Windows)
+- DigitShowModbus/BUILD_WIN.md  
+- DigitShowModbus/BUILD_WIN_MINGW.md  
 
-![VisualStudio起動時初期画面](img/vs2022/open_solution.png)
+のいずれかを選択して、内容に従います。  
+BUILD_WIN だと Visual Studio 20xx 系のビルドシステムを利用するため、立ち上げまで、ダウンロード・インストールにかなりの時間と容量を要します。  
+ですが比較的、不具合の検索時などでMicrosoft公式の情報が出やすいですので、手順の簡単さだけ見れば初心者向きかもしれません。  
 
-*図: VisualStudio起動時初期画面*
+MINGWの方法だと最小限のパッケージ、最小限のリソースのみを利用してビルドシステムを構築します。  
+Linuxとかなり互換性の高いビルド方法と成っており、ビルドも高速で、ストレスが少ないはずです。  
+将来的に、Linuxに移行したい、Linuxを既に使っているという人はこちらを利用したほうが良いでしょう。
 
-![.slnファイルの選択](img/vs2022/open_sln.png)
+### 環境の構築(Linux)
+- DigitShowModbus/BUILD_LINUX.md  
 
-*図: .slnファイルの選択*
+には、Linux向けの開発情報を記載しています。  
+Linuxの場合は、Windowsと違って、aptで導入可能なパッケージが多いため、むしろWindowsよりも開発が簡単でしょう。  
+こちらの場合もVSCode前提の構成となっています。
 
-slnファイルのダブルクリックでも開けますが、VisualStudioが複数インストールされている場合は、複雑な挙動になる可能性があります。
+### VSCodeでの作業
+[Terminal] -> [Run Tasks] に便利なコマンドを詰めてあります。  
+環境によっては動きませんが、生成AIに聞きながら頑張って進めましょう。  
 
-![直接選択時の挙動の一例](img/vs2022/open_sln_direct.png)
-
-*図: 直接選択時の挙動の一例*
-
-### ソリューションのビルド
-コードの追加時や初回運用時などは "Debug"モードでビルドすることをお勧めします。逆にそれ以降では、ログが増えすぎることから"Release"モードでビルドすることをお勧めします。
-ログの仕組みについては外部ライブラリを使用しているため"spdlog"のドキュメントを参照してください。
-通常運用時は特別な理由がない限り "x64"の"Release"を選択しておけば間違いはありません。
-"spdlog"にはログレベルがあり、優先度の低いものから"trace"、"debug"、"info"、"warn"、"error"、"critical"があります。
-"Release"モードでは"info"以上が出力され、"Debug"モードでは"debug"以上が出力されます。
-"trace"は非常に詳細なログを出力するため、通常は使用しません。
-
-![ビルドモードの選択](img/vs2022/build_mode.png)
-
-*図: ビルドモードの選択*
-
-![プラットフォームの選択](img/vs2022/platform_select.png)
-
-*図: プラットフォームの選択*
-
-「なにもしてないのにビルドが通らなくなった」は、よくあることです。ソリューションの"リビルド"もしくは"クリーン"の後に"リビルド"してください。
-
-![ソリューションのリビルド](img/vs2022/solution_rebuild.png)
-
-*図: ソリューションのリビルド*
+### トラブルシューティング
+生成AIに聞きながら勉強しなさい。
 
 ## コントロールの追加・修正
 `src/DigitShowModbusDoc.cpp` 及び `src/DigitShowModbusDoc.h` を起点として、`src/Control_xxxx.cpp`と`src/Control_xxxx.h`を編集します。
@@ -424,11 +366,22 @@ Bluetoothは無線のため、否が応でも予期しない遅延が、かつ�
 - 入力-ADS1115：$`4\,\mathrm{ch}`$/ic, 計$`16\,\mathrm{ch}`$, $`16\,\mathrm{bit}`$精度, $`64\,\mathrm{Hz}`$動作（オプションで$`128\,\mathrm{Hz}`$）
 - 出力-GP8403：$`2\,\mathrm{ch}`$/ic, 計6/$`8\,\mathrm{ch}`$, $`12\,\mathrm{bit}`$精度, オンデマンド動作
 
+### Modbusボード v2.5（Quartet）
+- 開発コード：Quartet（v2.5）
+- マイコン：Arduino Nano R4（RA4M1）
+- プラットフォーム：Arduino
+- 通信方式：USBシリアル(Native CDC)
+- 通信プロトコル：Modbus RTU
+- 通信速度：$`38400\,\mathrm{bps}`$
+- 入力-HX711：$`1\,\mathrm{ch}`$/ic, 計$`8\,\mathrm{ch}`$, $`16\,\mathrm{bit}`$精度, 128倍ゲイン,$`10\,\mathrm{Hz}`$動作
+- 入力-ADS1115：$`4\,\mathrm{ch}`$/ic, 計$`16\,\mathrm{ch}`$, $`16\,\mathrm{bit}`$精度, $`64\,\mathrm{Hz}`$動作（オプションで$`128\,\mathrm{Hz}`$）
+- 出力-GP8403：$`2\,\mathrm{ch}`$/ic, 計6/$`8\,\mathrm{ch}`$, $`12\,\mathrm{bit}`$精度, オンデマンド動作
+
 ### Modbusボード v3（Yamanin）
 - 開発コード：Yamanin（v3）
 - マイコン：STM32F411CE（BlackPill）
 - プラットフォーム：Zephyr RTOS
-- 通信方式：USBシリアル
+- 通信方式：USBシリアル(Native CDC)
 - 通信プロトコル：Modbus RTU
 - 通信速度：$`38400\,\mathrm{bps}`$（USBダイレクトのため、何でも良い）
 - 入力-HX711：$`1\,\mathrm{ch}`$/ic, 計$`8\,\mathrm{ch}`$, $`16\,\mathrm{bit}`$精度, 128倍ゲイン, $`80\,\mathrm{Hz}`$動作, 単純加算平均（8サンプル）
@@ -439,7 +392,7 @@ Bluetoothは無線のため、否が応でも予期しない遅延が、かつ�
 - 開発コード：Milia（v4）
 - マイコン：Raspberry Pi Pico（RP2040）
 - プラットフォーム：Arduino
-- 通信方式：USBシリアル
+- 通信方式：USBシリアル(Native CDC)
 - 通信プロトコル：Modbus RTU
 - 通信速度：$`38400\,\mathrm{bps}`$（USBダイレクトのため、何でも良い）
 - 入力-HX711：$`1\,\mathrm{ch}`$/ic, 計$`8\,\mathrm{ch}`$, $`16\,\mathrm{bit}`$精度, 128倍ゲイン,$`10\,\mathrm{Hz}`$動作
