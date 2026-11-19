@@ -159,6 +159,8 @@ EPを用いて軸方向の圧力を出力するチャンネルです。デフォ
 
 #### 供試体寸法のレファレンス値
 
+以下の計算は、Specimen ConfigウィンドウのPresent列の値をもとに行われます。ここでは、事前にInitial列の「Copy to Present」を押して、初期寸法をPresent列にコピーしてあることを前提としています。
+
 試験の最初に、実験者は供試体の初期直径を$`d_\mathrm{init}`$と初期高さ$`h_\mathrm{init}`$を測定します。これらをもとに初期体積$`V_\mathrm{init}`$が次のように計算されます。
 
 $$
@@ -281,15 +283,19 @@ EPを三軸セルに接続する前に、EPの出力圧力を調整する際に�
 
 *図: Voltage Output on DA Boardウィンドウ。*
 
-### Specimen Data
+### Specimen - Config
 
 供試体の初期寸法を設定するウインドウです。供試体の直径と高さ・LDTの長さなどを入力します。
 
-![Specimen Dataウィンドウ。](img/DSM_specimen.png)
+![Specimen Configウィンドウ。](img/DSM_specimen.png)
 
-*図: Specimen Dataウィンドウ。*
+*図: Specimen Configウィンドウ。*
 
-TBD...
+- 寸法はPresent（現在値）・Initial（初期値）・Before consolidation（圧密前）・After consolidation（圧密後）の4列で表示されます。Present列は表示のみで、計算に用いられます。Volume・Areaは直径と高さから自動計算されます。
+- 各列の下の「Copy to Present」を押すと、その列の値がPresent列にコピーされます。試験開始時はInitial列に初期寸法を入力し、「Copy to Present」を押してください。
+- 「Before Consolidation」「After Consolidation」を押すと、現在のLVDT・LCDPTの値をもとに圧密前・圧密後のレファレンス値が計算され（[供試体寸法のレファレンス値](#供試体寸法のレファレンス値)参照）、Present列にコピーされます。同時にLVDT・LCDPT・LDT1・LDT2の値が0に調整されます。
+- 「Export」を押すと、供試体の寸法情報をJSON形式のファイルに保存できます。
+- 上部のメンブレンのヤング率・厚さ、キャップ重量（Parameters of Test Apparatus）は、ねじり試験動作モード専用の項目で、本ウインドウでは表示のみです。
 
 ### Control - PreConsolidation
 
@@ -346,7 +352,7 @@ PreConsolidationは先行圧密用の制御コマンドです。主に供試体�
 
 ### Other - Open Temporary Folder
 
-一時フォルダ（%TEMP%\DigitShowModbus）を開くウインドウです。
+一時フォルダ（%TEMP%\DigitShowModbus）を開くウインドウです。開発者やデバッグ用です。
 
 ## コントロールについて
 
@@ -358,6 +364,7 @@ PreConsolidationは先行圧密用の制御コマンドです。主に供試体�
 PreConsolidationは、供試体の飽和過程で使用するコントロールです。
 [以下の図](#preconsolidation)に示すように、設定した軸差応力を保つように載荷軸を上下させます。
 デフォルトの設定では、$`q=0\,\mathrm{kPa}`$なので、等方状態を保とうとします。
+ただし、デフォルトではMax Motor Speedとq error at max motor speedが0のため、そのままではモーターは動きません。PreConsolidationウインドウでこれらの値を入力し、Applyを押してください。モーターは、軸差応力が目標値から$`0.5\,\mathrm{kPa}`$を超えて離れたときのみ動作します。
 
 軸差応力が目標値から離れれば離れるほど、高速でモーターを回転させて載荷軸を上下させます（いわゆるP制御のようなもの）。
 ただし、クラッチの消耗を防ぐため、軸差応力が$`0.5\,\mathrm{kPa}`$以下しか離れていないのであれば、載荷軸は動かないようにプログラムされています（この閾値は「Other - Environmental Variables」で変更できます）。
