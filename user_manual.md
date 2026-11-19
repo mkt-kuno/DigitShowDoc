@@ -76,7 +76,7 @@ Debugビルドで試用して、安全性を確認してから長期運用して
 同じように“モータUP”が“$`5.0\,\mathrm{[V]}`$”、“モータDOWN”が“$`0.0\,\mathrm{[V]}`$”です。
 コードを検索する場合は下記のような記述を探してください。
 
-**CDigitShowModbus.cpp より抜粋**
+**DigitShowModbus.h より抜粋**
 
 ```cpp
 #define DSM_AO_DEF_VLT_MOTOR_ON (5.0f)			// Voltage of Axial Motor ON
@@ -139,11 +139,15 @@ DigitShow Modbusでは、独自開発したModbusボードと通信を行い、6
 
 ### CH3:セルEP圧力
 
-EPは電空レギュレータ(Electrical-Pneumatic converter)の略称で、電圧に応じた空圧を出力する装置で、セル圧の制御に使用されます。デフォルトでは、0.01275kPa/Vの設定となっています。
+EPは電空レギュレータ(Electrical-Pneumatic converter)の略称で、電圧に応じた空圧を出力する装置で、セル圧の制御に使用されます。デフォルトでは、0.01275V/kPaの設定となっています。
 
-### CH4-7:空きチャンネル
+### CH4:EP軸圧（Axial Pressure）
 
-生研式モータ動作モードでは、空きチャンネルとなります。
+EPを用いて軸方向の圧力を出力するチャンネルです。デフォルトでは、0.00511V/Nの設定となっています。生研式モータ動作モードのStep Controlでは、Control No.0: StopのArgs[04]で出力電圧を0Vにする場合以外は使用されません。
+
+### CH5-7:ねじり試験用
+
+ねじり試験動作モード用の出力チャンネルです（Torsional ON/OFF、CW/CCW、Speed）。生研式モータ動作モードでは使用しません。
 
 ## 供試体寸法・ひずみ・応力の計算式
 
@@ -154,6 +158,8 @@ EPは電空レギュレータ(Electrical-Pneumatic converter)の略称で、電�
 供試体寸法には、時々刻々と変化する現在の寸法のほかに、レファレンス値という概念が存在します。現在の寸法は、「どこからどのくらい増えた／減ったのか」を計算することによって得られますが、レファレンス値とは、この「どこから」の情報に相当します（「どのくらい増えた／減った」の情報はセンサーから得られます）。また、レファレンス値はひずみの計算の分母に用いられます。レファレンス値は時々刻々の変化はしない定数ですが、値は圧密の前と後で更新されます。
 
 #### 供試体寸法のレファレンス値
+
+以下の計算は、Specimen ConfigウィンドウのPresent列の値をもとに行われます。ここでは、事前にInitial列の「Copy to Present」を押して、初期寸法をPresent列にコピーしてあることを前提としています。
 
 試験の最初に、実験者は供試体の初期直径を$`d_\mathrm{init}`$と初期高さ$`h_\mathrm{init}`$を測定します。これらをもとに初期体積$`V_\mathrm{init}`$が次のように計算されます。
 
@@ -203,7 +209,7 @@ $$
 \begin{align}
     \varepsilon_\mathrm{a} &= \left(1 - \frac{h}{h_\mathrm{ref}}\right) \times 100 \\
     \varepsilon_\mathrm{v} &= \left(1 - \frac{V}{V_\mathrm{ref}}\right) \times 100 \\
-    \varepsilon_\mathrm{r} &= \left(1 - \sqrt{\frac{1-\varepsilon_\mathrm{v}}{1-\varepsilon_\mathrm{a}}}\right) \times 100
+    \varepsilon_\mathrm{r} &= \left(1 - \sqrt{\frac{1-\varepsilon_\mathrm{v}/100}{1-\varepsilon_\mathrm{a}/100}}\right) \times 100
 \end{align}
 $$
 
@@ -265,7 +271,7 @@ $$
 5. Voltage Outでは、[出力チャンネル構成](#出力チャンネル構成)節に示すアナログ電圧出力値の情報が表示されます。
 6. Plotでは、Raw ValueやPhysical Value、Parametersの値の変化をグラフで表示します。データ保存中は最大4000点程度が表示されます。保存していないときは、最新60秒のデータが表示されます。
 7. System Log & Control Info では、システム全体のエラーや警告ログ、現状のControl情報や、次のステップの情報などを閲覧できます。
-8. Current Settings & Basic Settingsでは、Control Typeや、Samplingレートの設定や、制御とサンプリングの開始・停止を行うことができます。なお、Control TypeやSamplingレートの設定は、Applyボタンを押すことで反映されます。
+8. Current Settings & Basic Settingsでは、Control Typeや、SamplingTime（保存間隔）の設定や、制御とサンプリングの開始・停止を行うことができます。なお、Control TypeやSamplingTime（保存間隔）の設定は、Applyボタンを押すことで反映されます。
 
 ### DA Output - Voltage Output
 
@@ -277,15 +283,19 @@ EPを三軸セルに接続する前に、EPの出力圧力を調整する際に�
 
 *図: Voltage Output on DA Boardウィンドウ。*
 
-### Specimen Data
+### Specimen - Config
 
 供試体の初期寸法を設定するウインドウです。供試体の直径と高さ・LDTの長さなどを入力します。
 
-![Specimen Dataウィンドウ。](img/DSM_specimen.png)
+![Specimen Configウィンドウ。](img/DSM_specimen.png)
 
-*図: Specimen Dataウィンドウ。*
+*図: Specimen Configウィンドウ。*
 
-TBD...
+- 寸法はPresent（現在値）・Initial（初期値）・Before consolidation（圧密前）・After consolidation（圧密後）の4列で表示されます。Present列は表示のみで、計算に用いられます。Volume・Areaは直径と高さから自動計算されます。
+- 各列の下の「Copy to Present」を押すと、その列の値がPresent列にコピーされます。試験開始時はInitial列に初期寸法を入力し、「Copy to Present」を押してください。
+- 「Before Consolidation」「After Consolidation」を押すと、現在のLVDT・LCDPTの値をもとに圧密前・圧密後のレファレンス値が計算され（[供試体寸法のレファレンス値](#供試体寸法のレファレンス値)参照）、Present列にコピーされます。同時にLVDT・LCDPT・LDT1・LDT2の値が0に調整されます。
+- 「Export」を押すと、供試体の寸法情報をJSON形式のファイルに保存できます。
+- 上部のメンブレンのヤング率・厚さ、キャップ重量（Parameters of Test Apparatus）は、ねじり試験動作モード専用の項目で、本ウインドウでは表示のみです。
 
 ### Control - PreConsolidation
 
@@ -304,9 +314,10 @@ PreConsolidationは先行圧密用の制御コマンドです。主に供試体�
 
 *図: Control - Step Controlウィンドウ。*
 
-1. 現在のControlのStep No.が表示されます。チェックボックスを選択した上で、矢印ボタンをクリックするとStep No.のインクリメント・デクリメントができます。なお、設定可能なStep No.は0から1023までです。
-2. 各StepのControl No.の設定およびそのパラメータの設定を行うことができます。Loadボタンをクリックすると、現在入力中のStep No.の、DigitShowModbusに設定されているControl No.とパラメータが表示されます。Updateボタンをクリックすると、現在入力されているStep No.のControl No.とパラメータが、DigitShowModbus内に登録されます。  各Control No.の詳細が記述されています。なお、Control No.の詳細は、[コントロールについて](#コントロールについて)を参照してください。
-3. Import ボタンをクリックすると、指定したファイルからStep No., Control No.とパラメータを読み込むことができます。Exportボタンをクリックすると、現在設定されているStep No., Control No.とパラメータの情報を、指定したファイルに保存することができます。Closeボタンを押すと、ウインドウが閉じます。
+1. 現在のControlのStep No.が表示されます。「Edit」にチェックを入れると、矢印ボタンでStep No.のインクリメント・デクリメントができます。なお、設定可能なStep No.は0から1023までです。
+2. 各StepのControl No.の設定およびそのパラメータの設定を行うことができます。Reloadボタンをクリックすると、現在入力中のStep No.の、DigitShowModbusに設定されているControl No.とパラメータが表示されます。Applyボタンをクリックすると、現在入力されているStep No.のControl No.とパラメータが、DigitShowModbus内に登録されます。使用する引数が空欄または非数値の場合は登録されず、該当欄が赤枠で表示されます。  各Control No.の詳細が記述されています。なお、Control No.の詳細は、[コントロールについて](#コントロールについて)を参照してください。
+3. Import ボタンをクリックすると、指定したファイルからStep No., Control No.とパラメータを読み込むことができます。Exportボタンをクリックすると、現在設定されているStep No., Control No.とパラメータの情報を、指定したファイルに保存することができます。ファイルはJSON形式です。
+4. Copy AI Promptボタンを押すと、Step ControlのJSON形式と全コントロールの仕様が、AI用プロンプトとしてクリップボードにコピーされます。
 
 制御の詳細については、[コントロールについて](#コントロールについて)を参照してください。
 
@@ -320,8 +331,9 @@ PreConsolidationは先行圧密用の制御コマンドです。主に供試体�
 
 ### Other - Environmental Variables
 
-ソフトウェアの環境変数を表示するウインドウです。
-コントロール中やデータ保存中に、環境変数を確認したい場合は注意してください。
+ソフトウェアの環境変数（DA校正係数、制御許容誤差ErrorStress、既定供試体寸法など）を表示・変更するウインドウです。
+変更する場合は「Accept Risks」にチェックを入れてから、各行のUpdateを押します。変更内容はconfig.jsonに保存されます。
+コントロール中やデータ保存中に変更すると、予期しない動作の原因となるため注意してください。
 
 ![Other - Environmental Variablesウィンドウ。](img/DSM_envval.png)
 
@@ -333,15 +345,15 @@ PreConsolidationは先行圧密用の制御コマンドです。主に供試体�
 遠隔監視用ビューワー（**DigitShowWebview**）や外部の Python スクリプト等からリアルタイムで計測値を取得する際に利用します。
 遠隔監視を行う場合は、監視用 PC で `DigitShowWebview.exe` を起動し、接続先設定画面にて本機の IP アドレスとポート番号を指定します。
 
-本ウインドウでは Listening アドレス（`0.0.0.0` または `127.0.0.1`）やポート番号の変更、「Restart Web API」による即時再起動が可能です。変更した設定は次回起動時にも自動的に復元されます。
+本ウインドウでは Listening アドレス（`0.0.0.0` または `127.0.0.1`）やポート番号の変更が可能です（稼働中に変更すると自動的に再起動されます）。「Start Web API」「Stop Web API」ボタンで起動・停止できます。変更した設定は次回起動時にも自動的に復元されます。
 
 ### Other - Open Appdata/Log Folder
 
-ソフトウェアのログを表示するウインドウです。エラーが発生した場合などに参照します。
+ソフトウェアのデータフォルダ（AppLocalData）をエクスプローラーで開きます。ログ（logs/）と設定ファイル（config.json）が保存されています。エラーが発生した場合などに参照します。
 
 ### Other - Open Temporary Folder
 
-ソフトウェアのが自動で生成する設定ファイルを表示するウインドウです。
+一時フォルダ（%TEMP%\DigitShowModbus）を開くウインドウです。開発者やデバッグ用です。
 
 ## コントロールについて
 
@@ -353,9 +365,10 @@ PreConsolidationは先行圧密用の制御コマンドです。主に供試体�
 PreConsolidationは、供試体の飽和過程で使用するコントロールです。
 [以下の図](#preconsolidation)に示すように、設定した軸差応力を保つように載荷軸を上下させます。
 デフォルトの設定では、$`q=0\,\mathrm{kPa}`$なので、等方状態を保とうとします。
+ただし、デフォルトではMax Motor Speedとq error at max motor speedが0のため、そのままではモーターは動きません。PreConsolidationウインドウでこれらの値を入力し、Applyを押してください。モーターは、軸差応力が目標値から$`0.5\,\mathrm{kPa}`$を超えて離れたときのみ動作します。
 
 軸差応力が目標値から離れれば離れるほど、高速でモーターを回転させて載荷軸を上下させます（いわゆるP制御のようなもの）。
-ただし、クラッチの消耗を防ぐため、軸差応力が$`0.5\,\mathrm{kPa}`$以下しか離れていないのであれば、載荷軸は動かないようにプログラムされています（この閾値はユーザーからは設定できません）。
+ただし、クラッチの消耗を防ぐため、軸差応力が$`0.5\,\mathrm{kPa}`$以下しか離れていないのであれば、載荷軸は動かないようにプログラムされています（この閾値は「Other - Environmental Variables」で変更できます）。
 
 ![PreConsolidationの動作のイメージ](img/precon_q_rpm.png)
 
@@ -363,12 +376,11 @@ PreConsolidationは、供試体の飽和過程で使用するコントロール�
 
 ### Step Control - 0: Stop
 
-Control No.0: Stopは、引数で指定しない限り、基本的に何の制御も行いません。
-モーターのクラッチはONのまま、モーターは回転しません（載荷軸は全く動きません）。
-セル圧を制御するEPの出力電圧は、それまでの値を保持します（セル圧も基本的に変動しません）。
+Control No.0: Stopは、Step Controlをこのステップで終了するコントロールです。
+モーターの速度は0になります。引数で指定した出力のみ変更され、それ以外の出力は現在の値を保持します。
 
 v4.6.xまでは「No control」でしたが、v4.7.0からは「Stop」に名称を変更しました。
-互換性を保つため、引数で指定しない場合は、従来の「No control」と同様に、基本的に何の制御も行いません。
+引数の指定にかかわらず、本コントロールを実行するとStep Controlはこのステップで終了します。
 
 以下のパラメータが設定できます。
 
@@ -393,7 +405,7 @@ Control No.1: Monotonic Axial Loadingは、単調軸圧縮・軸伸長を行う�
 - Args[06]: 軸差応力のリミッター値。単位はkPa。Args[05]でリミッターを有効化した場合に、Args[06]で設定された値を超える軸差応力が計測された場合に次のStep No.に進みます。
 
 なお、Args[03]とArgs[05]のリミッターは少なくとも1つは設定する必要があります。両方とも設定しない場合、載荷が行われません。
-また、非排水三軸圧縮試験の場合には、Args[04]にロードセルの定格容量を設定することをお勧めします（応力経路で限界状態線上に達したのちに軸差応力が増加し続ける場合があるためです）。
+また、非排水三軸圧縮試験の場合には、Args[05]を1にし、Args[06]にロードセルの定格容量以下の値を設定することをお勧めします（応力経路で限界状態線上に達したのちに軸差応力が増加し続ける場合があるためです）。
 
 ### Step Control - 2: Cyclic Axial Loading Between Specified STRESS Limits
 
@@ -448,7 +460,7 @@ Control No.5: Linear Stress Path Loadingは、指定した応力経路に沿っ�
 - Args[01]: 初期の半径（水平）方向の有効応力。単位はkPa。
 - Args[02]: 最終的に目標とする軸（鉛直）方向の有効応力。単位はkPa。
 - Args[03]: 最終的に目標とする半径（水平）方向の有効応力。単位はkPa。
-- Args[04]: セル圧を変化させる速度。単位はkPa/min。Args[01]からArgs[03]に向かって、指定した速度でセル圧が増加または減少します。
+- Args[04]: セル圧を変化させる速度。単位はkPa/min。Args[01]からArgs[03]に向かって、指定した速度でセル圧が増加または減少します。このコントロールではセル圧は常に制御されるため、排水条件でのみ使用してください。
 - Args[05]: 軸方向の有効応力が現在の目標値とどれだけズレたときに、Args[06]で設定したモーターの回転速度となるか。単位はkPa。
 - Args[06]: モーターの最大回転速度。単位はRPM。
 
